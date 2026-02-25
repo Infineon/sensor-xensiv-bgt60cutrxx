@@ -1,0 +1,384 @@
+Radar Sensor Reference Software Evaluation License Agreement
+=============================
+BY DOWNLOADING, INSTALLING AND/OR USING (INCLUDING COPYING) THE LICENSED SOFTWARE,
+LICENSEE AGREES TO BE BOUND BY THE TERMS AND CONDITIONS OF THIS AGREEMENT. IF LICENSEE
+DOES NOT AGREE TO ALL TERMS AND CONDITIONS OF THIS AGREEMENT, LICENSEE (INCLUDING YOU)
+SHALL NOT DOWNLOAD, INSTALL AND/OR USE (INCLUDING COPYING) THE LICENSED SOFTWARE
+1.	Definitions
+
+The following defined terms shall have the meanings set forth below.
+
+1.1	"Agreement" shall mean this Radar Sensor Reference Software Evaluation License Agreement.
+
+1.2	"Confidential Information" shall mean ideas, concepts and information incorporated in the Licensed
+Software, the source code of the Licensed Software (to the extent provided), the Documentation and the
+content of this Agreement. In addition to the foregoing, Confidential Information shall mean any and all
+financial, commercial, business or technical information and data disclosed, in any medium or form, by
+Infineon or one of its Subsidiaries or by Licensee or one of its Subsidiaries ("Discloser") to Infineon or one of
+its Subsidiaries (which shall be considered as disclosure by Discloser to Recipient) or to Licensee or one of
+its Subsidiaries (which shall be considered as disclosure by Discloser to Recipient)("Recipient") under and/or
+in connection with this Agreement which (i) is marked "Confidential" or similar (ii) is designated as
+confidential before, during or within thirty (30) days after disclosure or (iii) a reasonable person would expect
+to be treated as confidential.
+
+1.3	"Documentation" shall mean the technical information (if any) provided by Infineon along with the Licensed
+Software, such as user guide, installation guide, release notes, etc.
+
+1.4	"Infineon" shall mean Infineon Technologies AG, Am Campeon 1-15, 85579 Neubiberg, Germany,
+Germany, or a specific Affiliate of Infineon Technologies AG, who is licensing the Licensed Software to
+Licensee according to the terms and conditions of this Agreement.
+
+1.5	"Infineon Hardware" shall mean Infineon semiconductor devices for which the Licensed Software is
+intended, such as microcontrollers, sensors and digital microphones, etc.
+
+1.6	"Licensee" means the company or individual indicated in the Registration.
+1.7	"Licensed Items" shall mean the Licensed Software and the Documentation.
+1.8	"Licensed Software" shall mean the software package (as described in Appendix A) provided by Infineon
+under this Agreement as well as updates (if any) made available by Infineon to Licensee at Infineon s
+discretion.
+
+1.9	"Party" shall mean Infineon or Licensee. Both may be collectively referred to as "Parties".
+1.10	"Registration" means an account with Infineon's internet service MyICP, MyInfineon.com, Infineon
+Development Center or other Infineon download platforms as may be provided to Licensee enabling the
+download of the Licensed Software.
+
+1.11	"Subsidiary" shall mean any company in which either Party, directly or indirectly, through one or more
+intermediaries, owns more than fifty percent (50%) of such company s capital or equivalent voting rights, for
+as long as such ownership subsists.
+
+1.12	"You" shall mean (i) if Licensee is a company, an individual acting in the ordinary course of business of
+Licensee, or (ii) if Licensee is an individual, Licensee.
+2.	License Grant
+2.1	For the Term and subject to the terms and conditions including Section 5 of this Agreement, Infineon hereby
+grants Licensee under Infineon's intellectual property rights in the Licensed Items a limited, worldwide, non-
+exclusive, non-transferable, non-assignable, non-sublicensable right to:
+
+i)	use and reproduce the Licensed Software only in conjunction with Infineon Hardware;
+ii)	modify the source code of the Licensed Software (to the extent said source code is provided) only as
+required to exercise the rights pursuant to Section 2.1 i);
+iii)	use the Documentation only as required in order to exercise the rights pursuant to Section 2.1
+i) and ii);
+always provided that the Licensed Software and the Documentation are used by Licensee only for evaluation
+purposes and only internally within Licensee.
+
+2.2	Licensee may exercise the rights granted pursuant to Section 2.1 by its Subsidiaries, provided that the
+exercise of license rights pursuant to Section 2.1 are limited to Licensee's Subsidiaries, and always provided
+that Licensee agrees to be fully liable towards Infineon for any and all damages arising out of any acts or
+omissions resulting from the exercise of license rights pursuant to this Section 2.1.
+
+2.3	Except for the limited rights granted in this Section 2, Infineon retains all right, title and interest in and to the
+Licensed Items and all intellectual property rights therein. The license rights granted pursuant to this
+Agreement do not transfer to Licensee title or ownership in the Licensed Items or any copies thereof, or any
+of the intellectual property rights therein.
+
+2.4	Licensee hereby grants to Infineon and its Subsidiaries a limited, a world-wide, non-exclusive, sublicensable,
+transferable, perpetual, irrevocable, fully paid-up license under all intellectual property rights contained in any
+modifications of the Licensed Software made by or on behalf of Licensee in accordance with this Agreement
+(which shall be made available to Infineon with a reasonable time frame after their creation) to reproduce,
+distribute, display, perform and to create derivative works of and otherwise modify the Licensed Software.
+The Parties agree that the principal purpose of the foregoing license is to prevent Infineon from being
+blocked in its further development and exploitation of the Licensed Software.
+
+3.	Open Source Licensed Software / Third-Party Software
+3.1	Parts of the software provided together with the Licensed Software may contain or be open source software
+or third party software as indicated in Appendix A ( Third-Party Software ).
+
+3.2	This Agreement does not limit or supersede Licensee's rights under the license of any such Third-Party
+Software. In case of conflict, the license terms of such Third-Party Software shall supersede the terms and
+conditions of this Agreement. Licensee may redistribute Third-Party Software only in compliance with the
+licensing terms applicable to such Third-Party Software. If Licensee is entitled to receive the source code
+from Infineon for any Third-Party Software included with the Licensed Software, either the source code will
+be included with the Licensed Software or Licensee may obtain the source code at no charge from
+https://www.infineon.com/cms/en/design-support/software/free-and-open-source-software-foss/ or any
+website as may be provided to Licensee. The applicable license terms will accompany each source code
+package. To review the license terms applicable to any Third-Party Software for which Infineon is not
+required to provide Licensee with source code, please see the Licensed Software's installation directory on
+Licensee's computer.
+
+3.3	If licensing terms of Third-Party Software, which are part of Licensed Software, require that the source code
+of such Third-Party Software to be made available and such source code:
+
+i)	is not made available as part of the Licensed Software;
+ii)	in case of distribution of the Licensed Software by download, is not made available for download;
+iii)	is not made available otherwise in accordance with the applicable open source software license terms;
+or
+iv)	is not made available via the hyperlinked website in section 3.1;
+the source code of such Third-Party Software may be obtained for as long as Infineon offers customer
+support for the Licensed Software, but at least three (3) years following distribution of the Licensed Software,
+by contacting Infineon.
+
+4.	Restrictions
+4.1	Unless permitted otherwise by this Agreement, Licensee shall not itself or through any third party:
+i)	reproduce the Licensed Items except and only to the extent permitted by applicable law despite this
+restriction;
+ii)	reverse engineer, decompile and/or disassemble any Licensed Software not provided in source code
+form except and only to the extent permitted by applicable law despite this restriction;
+
+iii)	remove any copyright notices contained in the Licensed Items;
+iv)	publicly display, publicly perform, publish or broadcast the Licensed Items without Infineon's prior
+written approval;
+v)	sell, lease, license or sublicense the Licensed Items without Infineon's prior written approval;
+vi)	make available the Licensed Items or assign or otherwise transfer any right in the Licensed Items to
+third parties;
+vii)	use the Licensed Items for the purposes of determining whether they or any Infineon products are
+covered by any intellectual property rights (including without limitation patents and copyrights) of
+Licensee or any other third party;
+viii)	directly or indirectly bring any suit before any court or administrative agency or otherwise assert any
+claim against Infineon, its Affiliates and/or any of their respective suppliers and/or customers due to
+their development, use, reproduction, manufacturing, marketing, sale, distribution, licensing,
+sublicensing or other disposal of the Licensed Items or any Infineon products based on infringement of
+any of Licensee's intellectual property rights (including without limitation patents and copyrights).
+4.2	Licensed Software delivered by Infineon under this Agreement shall not be used in any applications where a
+failure or any consequences of the use of the Licensed Software can reasonably be expected to result in
+personal injury or death, which might include without limitation medical, aviation or aerospace applications.
+However, the foregoing shall not prevent Licensee from using Licensed Software in such fields of application
+(e.g. automotive applications) if the Licensed Software is explicitly designed and licensed for by Infineon,
+provided that the overall responsibility for the system in which Licensee integrates the Licensed Software as
+well as the system integration lies with Licensee.
+
+5.	Taxes
+
+5.1	For the avoidance of doubt, all fees and charges (amounts) specified under the terms of this agreement shall
+be exclusive of any digital services tax or digital tax, i.e. any tax levied specifically for digital products,
+transactions and services. Insofar as the ObjectCode, SourceCode, FOSS are subject to digital services tax
+or digital tax, such tax shall be borne by Licensee. Depending on the nature of such tax, Licensee shall
+either pay such tax to Infineon in addition to the agreed amounts in case Infineon is required by law to make
+such a payment or make the necessary gross-up payments to leave Infineon (after the deduction of such
+tax) with an amount equal to the payment which would have been due if no withholding of such tax had been
+required in case Licensee is required to make such a payment.
+The Parties are in agreement that for tax purposes neither this Agreement nor any other agreement
+established between the Parties reclassifies this royalty-free license or free of charge services into a license
+or service for consideration. Should Licensee nevertheless be assessed with taxes in its country of residence
+in connection with this Agreement, Licensee will bear such taxes.
+
+
+6.	Warranty
+
+Without prejudice to Section 7, the Licensed Items provided by Infineon under this Agreement are provided
+"AS IS" without any warranty or liability of any kind and Infineon hereby expressly disclaims any warranties
+or representations, whether express, implied, statutory or otherwise, including but not limited to warranties of
+workmanship, merchantability, fitness for a particular purpose, defects in the Licensed Items, or non-
+infringement of third parties' intellectual property rights.
+
+7.	Liability
+
+7.1	Nothing in this Agreement shall limit or exclude Infineon's liability under mandatory statutory liability laws, or
+in cases of Infineon's intentional misconduct or gross negligence.
+
+7.2	Without prejudice to Section 7.1, Infineon's liability under and/or in connection with this Agreement shall be
+excluded in all other cases.
+7.3	Notwithstanding the above and regardless of the cause in law, Infineon shall not be liable for any indirect,
+incidental or consequential damages, including without limitation any damages arising from interrupted
+operation, loss of profits, loss of revenue, loss of goodwill, loss of capital and/or loss of information and data.
+
+8.	Confidentiality
+
+8.1	Unless expressly agreed otherwise by the Parties, Confidential Information shall
+i)	be used and reproduced by Recipient for the sole purpose of performing Recipient's rights and/or
+obligations under or in connection with this Agreement;
+ii)	be treated by Recipient with the same degree of care to avoid unauthorized disclosure to any third
+party as with respect to Recipient's own confidential information of like importance but with no less
+than reasonable care;
+iii)	not be reverse engineered, decompiled or disassembled by Recipient; and
+iv)	not be distributed, disclosed, or disseminated in any way or form by Recipient to anyone, except that
+Recipient may disclose Discloser's Confidential Information to its Subsidiaries who have a reasonable
+need to know such Confidential Information, and who are bound to confidentiality not less stringent
+than under this Agreement. Notwithstanding the foregoing, Recipient may disclose this Agreement to
+its accountants, attorneys and financial advisors who are bound to confidentiality not less stringent
+than under this Agreement, solely to the extent necessary for the performance of their services.
+Recipient shall be fully liable towards the other Party for any and all damages arising out of any acts or
+omissions resulting from the access to Confidential Information by third parties stipulated in this
+Section 8.1 iv).
+
+8.2	The obligations as per Section 8.1 shall not apply to any information, that Recipient can demonstrate
+i)	is at the time of disclosure already in the public domain or later becomes available to the public
+domain through no breach by Recipient of this Agreement, except that Confidential Information shall
+not be deemed to be in the public domain merely because a part of the Confidential Information is
+embodied in general disclosures or because individual features, components or combinations thereof
+are now or become known to the public;
+ii)	is received by Recipient from a third party free to lawfully disclose such information to Recipient
+without obligations of confidentiality;
+iii)	was in Recipient's lawful possession prior to receipt from Discloser as evidenced by written
+documentation;
+iv)	is independently developed by Recipient without the benefit of any of Discloser's Confidential
+Information as evidenced by written documentation;
+v)	is approved for release by Discloser in writing; or
+vi)	is required by law to be disclosed in response to a valid order of a court of competent jurisdiction or
+authorized government agency, provided that Recipient provides Discloser prompt notice of the order
+and at Discloser's request and expense reasonably cooperates with Discloser's efforts to receive a
+protective order or otherwise limit disclosure.
+
+8.3	All Confidential Information disclosed pursuant to this Agreement shall remain the property of Discloser.
+Unless explicitly stated otherwise in this Agreement, no license or right of use under any patent or patentable
+right, copyright, trademark or other proprietary right is granted or conveyed by this Agreement. The
+disclosure of Confidential Information shall not result in any obligation to grant Recipient any rights therein.
+
+8.4	Upon Discloser's written request, Discloser's Confidential Information under Recipient's control, along with all
+copies thereof, shall (i) if available in electronic form be destroyed or (ii) if available in physical form be
+destroyed or returned as per Discloser's instructions. Destruction shall be confirmed by Recipient in writing,
+within sixty (60) days from such request. Notwithstanding the foregoing, Recipient may retain a copy of
+Discloser's Confidential Information if required for legal, regulatory or corporate governance purposes or if
+stored in computer backups or similar archives, provided that Recipient does not use the Confidential
+Information for any other purposes. Sections 8.1 ii) to 8.4 (but excluding the right to disclose Discloser's
+Confidential Information to third parties pursuant to Section 8.1 iv) shall survive termination or expiration of
+this Agreement.
+
+9.	Term and Termination
+9.1	This Agreement shall become effective upon Licensee's acceptance of the terms and conditions of this
+Agreement and shall remain in effect for a term of 1 (one) year unless terminated earlier as permitted under
+this Section 9 ( Term ).
+
+9.2	Notwithstanding Section 9.1, this Agreement shall automatically terminate upon the occurrence of either one
+or more of the following events stated below:
+i)	if a third party claims to have intellectual property rights in the Licensed Software;
+ii)	if Licensee or any of Licensee's Subsidiaries directly or indirectly brings any suit before any court or
+administrative agency or otherwise asserts any claim against Infineon and/or any of its Affiliates,
+suppliers or customers due to their development, use, reproduction, manufacturing, marketing, sale,
+offer to sale, distribution, importation, licensing, sublicensing or other disposal of the Licensed Items or
+Infineon Hardware based on infringement of any intellectual property rights (including without limitation
+patents and copyrights); or
+iii)	in case of a change of control of Licensee.
+
+9.3	Upon expiration or termination of this Agreement for any reason, the rights and licenses granted to Licensee
+under this Agreement shall immediately cease.
+
+9.4	The provisions of Sections 4, 6, 7, 8 and 9.4 shall survive any termination or expiration of this Agreement.
+
+10.	Force Majeure
+
+Neither Party shall be liable to the other for failure in the performance of any of its obligations under this
+Agreement for the time and to the extent such failure is caused by force majeure such as, but not limited to,
+riots, civil commotions, wars, strikes, freight embargo, shortage of supply, lock-outs, hostilities between
+nations, governmental laws, orders or regulations, actions by the government or any agency thereof, storms,
+floods, fires, epidemics, pandemics, sabotages, explosions or any other contingencies beyond the
+reasonable control of the respective Party or its sub-contractors. In such events, the affected Party shall
+promptly inform the other Party of such circumstances, and the performance of obligations hereunder shall
+cease during, but not longer than, the period of existence of such cause and the period reasonably required
+to perform the obligations.
+
+11.	Export Control
+
+11.1	It is the responsibility of Licensee to comply with all applicable export control, anti-terrorism and trade laws
+and regulations as well as applicable national laws, as relevant to any goods, technologies or services
+purchased or received from Infineon ("Foreign Trade Regulations"). Insofar as Licensee incorporates any
+goods, technologies or services delivered by Infineon into any items, Licensee agrees and confirms that
+Licensee shall not export or re-export, directly or indirectly, those items to any country, destination, or
+individual, for which an export authorization or other governmental or official approval is required, without
+first obtaining such authorization or approval.
+11.2	Any purchase order placed under this Agreement and any confirmations may be subject to necessary export
+authorizations being granted. When such authorization cannot be obtained, the agreement or the affected
+purchase shall be void per Infineon s notice.
+
+11.3	Licensee shall not use, directly or indirectly, any goods, technologies or services delivered by Infineon for
+nuclear technology, weapons of mass destruction, or carriers thereof. Further, except for memory solution
+goods, technology or services, Licensee shall not use any goods, technologies or services delivered by
+Infineon in weapon systems.
+
+11.4	Any goods or services that are controlled and subject to applicable national export licenses shall not be
+supplied to military, paramilitary, police, intelligence agencies or civil administrations of such institutions or
+other institutions acting on behalf of them.
+
+11.5	In case of breach of any of the obligations mentioned, the termination rules as agreed between the Parties
+shall apply and Infineon shall be entitled to seize adequate measures without any liability including
+termination of this Agreement or any individual purchase agreement entered into hereunder. Infineon shall
+communicate the reason for termination or other measures to Licensee without undue delay. Infineon may
+also be required to inform competent export control authorities.
+
+12.	Applicable Law / Dispute Resolution
+12.1	This Agreement shall be governed by and construed in accordance with the law in force in
+Switzerland without reference to its conflict of law provisions. The application of the United Nations
+Convention on Contracts for the International Sale of Goods of 11 April 1980 shall be excluded.
+
+12.2	The exclusive place of jurisdiction for all legal disputes arising out of or in connection with this
+Agreement shall be Zurich, Switzerland. However, nothing in this Agreement shall preclude either
+Party from seeking interim measures of protection in any court of competent jurisdiction.
+
+13.	Miscellaneous
+13.1	Licensee may not assign this Agreement, transfer its obligations or assign its rights hereunder without the
+prior written consent of Infineon.
+
+13.2	No express or implied waiver by any of the Parties to this Agreement of any breach of any term, condition or
+obligation of this Agreement shall be construed as a waiver of any subsequent or continuing breach of that
+term, condition or obligation or of any other term, condition or obligation of this Agreement of the same or of
+a different nature. Any waiver, consent, or approval of any kind regarding any breach, violation, default,
+provision or condition of this Agreement must be in writing and shall be effective only to the extent
+specifically set forth in such writing.
+
+13.3	The Parties are independent contractors and nothing in this Agreement is intended or shall be construed as
+to one Party being considered or permitted to be an agent, partner, or joint venturer of the other Party.
+
+13.4	Licensee shall not make any public announcement, press release, industry trade magazines announcement
+or other form of communication to the press regarding the collaboration between Infineon and Licensee
+without Infineon's prior written consent.
+
+13.5	Any additions or amendments to this Agreement shall only be valid if made in writing and signed by the
+Parties; this written form requirement shall also be considered fulfilled where signatures are exchanged
+electronically on scanned copies via fax or email (PDF scan), or an electronic signature process is used (e.g.
+DocuSign, BestSign or Adobe Sign). This written form requirement can only be waived or changed as set
+forth in the preceding sentence.
+
+13.6	This Agreement may be executed in any number of counterparts, which shall together constitute one
+Agreement. Any party may enter into this Agreement by signing any such counterpart.
+
+13.7	The effectiveness of this Agreement shall not be impaired if any provision of this Agreement should be
+completely or partially invalid or unenforceable. In this case, the Parties shall agree on a provision that meets
+the economical intention of the invalid or unenforceable provision.
+13.8	This Agreement constitutes the entire agreement between the Parties hereto with respect to the subject
+matter hereof and supersedes all previous communications, discussions, understandings, agreements and
+negotiations between the Parties with respect to such subject matter hereof. General terms and conditions of
+neither Party shall apply within the scope of this Agreement.
+Appendix A: Licensed Software
+
+I.	Licensed Software
+	Licensed Software comprises of any and/or one of the following Software Items as provided (hereinafter
+defined) as part of Radar Sensor Reference Software Demo (with GUI running on Windows 10 PC/Laptop)
+using Infineon 60GHz Radar Sensor and firmware running on Infineon PSoC  6 Microcontroller
+supporting:
+*	Human presence detection and movement tracking features for up to 3 people in a room with typical
+field of view (FoV) as 0.6-5 m, +/- 45 deg,
+
+Software Items:
+*	firmware - binaries (.bin/.hex files) and/or source code
+*	visualization GUI (graphical user interface) showing application performance over field of view (FoV)
+*	software libraries (.a, .so, .lib etc.) with or without application example source code (.c, .h)
+*	Licensed Software project package (software libraries, example code, other required .c, .h, .a, etc.
+files)
+
+II.	Third party software
+The following open source libraries is being used in the Licensed Software:
+
+Content
+Description
+License
+ARM FFT Lib (CMSIS DSP)
+compute library used for embedded
+systems for Arm Cortex platform
+https://www.apache.org/licen
+ses/LICENSE-2.0
+
+FreeRTOS
+real-time operating system (RTOS)
+kernel for embedded devices
+https://opensource.org/licens
+es/MIT
+Misc. content generated as
+part of Matlab code
+generation (e.g rtwtypes.h,
+tmwtypes.h. sortIdx.c etc.)
+e.g. type definitions needed by
+generated code, generated sorting
+algorithm
+
+Mathworks
+
+
+
+
+CONFIDENTIAL
+1
+
+
+
+SLA_IFAG_Click_License	Page 1 of 1
+CONFIDENTIAL
+SLA_IFAG_Click_License	Page 1 of 1

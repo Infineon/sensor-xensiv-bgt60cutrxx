@@ -1,0 +1,27 @@
+var searchData=
+[
+  ['sensor_0',['XENSIV&amp;trade; BGT60CUTRXX radar sensor',['../index.html',1,'']]],
+  ['sensor_20driver_20porting_20guide_1',['XENSIV™ BGT60CUTRXX Radar Sensor Driver Porting Guide',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html',1,'']]],
+  ['sequence_2',['Driver startup sequence',['../index.html#autotoc_md5',1,'']]],
+  ['setup_3',['Setup',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md60',1,'6.1 Hardware Setup'],['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md69',1,'7.1 Arduino IDE Setup']]],
+  ['shield_20to_20xmc1400_20arduino_20kit_20connection_20diagram_4',['BGT60CUTRXX Shield to XMC1400 Arduino Kit Connection Diagram',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md49',1,'']]],
+  ['software_5',['10.2 Related Software',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md86',1,'']]],
+  ['software_20prerequisites_6',['2.4 Software Prerequisites',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md33',1,'']]],
+  ['solutions_7',['9.1 Common Issues and Solutions',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md80',1,'']]],
+  ['specifications_8',['Specifications',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md45',1,'4. Hardware Interface Specifications'],['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md54',1,'5.2 Function Specifications']]],
+  ['spi_20bus_20timing_20diagram_9',['4.1 SPI Bus Timing Diagram',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md46',1,'']]],
+  ['spi_20communication_20protocol_10',['SPI communication protocol',['../index.html#autotoc_md6',1,'']]],
+  ['spi_20configuration_11',['SPI configuration',['../index.html#autotoc_md7',1,'']]],
+  ['spi_20configuration_20requirements_12',['2.2 SPI Configuration Requirements',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md30',1,'']]],
+  ['spi_20parameters_13',['SPI Parameters',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md31',1,'']]],
+  ['spi_20protocol_20format_14',['SPI Protocol Format',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md47',1,'']]],
+  ['spi_20read_20write_20protocol_15',['SPI read/write protocol',['../index.html#autotoc_md8',1,'']]],
+  ['spi_20transfer_20functions_16',['5.2.3 SPI Transfer Functions',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md57',1,'']]],
+  ['standard_20libraries_17',['Required Standard Libraries',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md35',1,'']]],
+  ['start_18',['Quick start',['../index.html#autotoc_md2',1,'']]],
+  ['start_20checklist_19',['Appendix B: Quick Start Checklist',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md90',1,'']]],
+  ['startup_20sequence_20',['Driver startup sequence',['../index.html#autotoc_md5',1,'']]],
+  ['status_20codes_21',['Status Codes',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md41',1,'']]],
+  ['structure_22',['Structure',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md24',1,'1.3 Driver Package File Structure'],['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md71',1,'7.2 Project Structure'],['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md39',1,'Main Data Structure']]],
+  ['supply_20requirements_23',['Power Supply Requirements',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md29',1,'']]]
+];

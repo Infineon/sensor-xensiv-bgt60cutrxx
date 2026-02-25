@@ -1,0 +1,15 @@
+@startuml inline_umlgraph_1.png
+title Library Architecture
+rectangle "Raw Frame Data" as Start
+rectangle "FIFO Read" as FIFO
+rectangle "Clutter Removal" as Clutter
+rectangle "Clustering" as Clustering
+rectangle "Motion Detection" as MD
+rectangle "BGT60CUTRxx Low Level Driver Functions" as API
+
+Start --> FIFO
+FIFO --> API
+Clutter --> MD
+Clustering --> MD
+MD --> API
+@enduml
