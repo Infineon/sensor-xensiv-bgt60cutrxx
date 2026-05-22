@@ -1,9 +1,9 @@
 /**
  * @file xensiv_bgt60cutrxx_mtb.c
- * @brief Implementation file for XENSIV BGT60CUTRXX sensor integration with PSoC and Airoc.
+ * @brief Implementation file for XENSIV BGT60CUTRxx sensor integration with PSoC and Airoc.
  *
  * This file contains the implementation of functions and macros required for
- * integrating the XENSIV BGT60CUTRXX sensor with a PSoC MCUs.
+ * integrating the XENSIV BGT60CUTRxx sensor with a PSoC MCUs.
  *
  * @note Ensure that the correct file path is used when including this file in your project.
  */
@@ -13,6 +13,7 @@
 * Header Files
 *******************************************************************************/
 #include <stdint.h>
+#include <inttypes.h>
 #include "cybsp.h"
 #include "cyhal.h"
 
@@ -53,11 +54,10 @@ static int32_t xensiv_bgt60cutrxx_platform_spi_init(xensiv_bgt60cutrxx_mtb_iface
                                                     xensiv_bgt60cutrxx_mtb_iface_config_t* config);
 
 /**
- * @brief Initializes the XENSIV BGT60CUTRXX platform GPIO pins.
+ * @brief Initializes the XENSIV BGT60CUTRxx platform GPIO pins.
  *
- * This function initializes the GPIO pins required for the XENSIV BGT60CUTRXX sensor,
- * including the LDO enable pin, SPI chip select pin, reset pin, and other necessary
- * GPIO pins based on the target platform.
+ * This function initializes the GPIO pins required for the XENSIV BGT60CUTRxx sensor,
+ * including the SPI chip select pin, reset pin, GPIO pins based on the target platform.
  *
  * @param config Pointer to the configuration structure containing pin definitions and settings.
  * @return int32_t Returns XENSIV_BGT60CUTRXX_STATUS_OK (0) on success, otherwise returns
@@ -83,9 +83,9 @@ static int32_t xensiv_bgt60cutrxx_platform_gpio_init(xensiv_bgt60cutrxx_mtb_ifac
 
 
 /**
- * @brief Initializes the XENSIV BGT60CUTRXX platform SPI interface.
+ * @brief Initializes the XENSIV BGT60CUTRxx platform SPI interface.
  *
- * This function initializes the SPI interface for the XENSIV BGT60CUTRXX sensor
+ * This function initializes the SPI interface for the XENSIV BGT60CUTRxx sensor
  * and configures the SPI pins and frequency.
  *
  * @param mcu_iface Pointer to the MCU interface.
@@ -168,7 +168,9 @@ int32_t xensiv_bgt60cutrxx_platform_open(xensiv_bgt60cutrxx_mtb_iface_t* mcu_ifa
 int32_t xensiv_bgt60cutrxx_platform_init(xensiv_bgt60cutrxx_mtb_t* radar_sensor,
                                          xensiv_bgt60cutrxx_mtb_iface_config_t* config,
                                          const uint32_t register_list[][2],
-                                         uint32_t register_list_len)
+                                         uint32_t register_list_len,
+                                         xensiv_bgt60cutrxx_power_mode_t power_mode,
+                                         bool deepsleep_after_calibration)
 {
     int32_t result;
 
@@ -178,7 +180,8 @@ int32_t xensiv_bgt60cutrxx_platform_init(xensiv_bgt60cutrxx_mtb_t* radar_sensor,
     // we have a 80MHz crystal on the board
     // and the VDDIO voltage level of the sensor is 1.8V
     result = xensiv_bgt60cutrxx_init(&radar_sensor->dev, &radar_sensor->iface.spi, BGT60CUTRXX_CLK_80MHZ,
-                                     BGT60CUTRXX_IO_LEVEL_1V8);
+                                     BGT60CUTRXX_IO_LEVEL_1V8, power_mode, deepsleep_after_calibration);
+
     if (XENSIV_BGT60CUTRXX_STATUS_OK != result)
     {
         DEBUG_PRINT("xensiv_bgt60cutrxx_init failed\n");
@@ -201,8 +204,19 @@ int32_t xensiv_bgt60cutrxx_platform_init(xensiv_bgt60cutrxx_mtb_t* radar_sensor,
     }
     DEBUG_PRINT("XENSIV radar configuration done\n");
 
-    /* Wait for sensor to apply configuration */
-    xensiv_bgt60cutrxx_platform_delay(50);
+    if (radar_sensor->dev.power_mode == DEEP_SLEEP_MODE)
+    {
+        // disable XOSC if the seq 0, 1, 2 are done
+        // keep the xosc active when seq3 is done
+        uint32_t value = 0;
+        value = BGT60CUTR13B_CLK_WUC_SEQ3_DONE_ACTIVE << BGT60CUTR13B_CLK_WUC_SEQ3_DONE_pos;
+        result = xensiv_bgt60cutrxx_set_reg(&radar_sensor->dev, BGT60CUTR13B_REG_CLK_WUC, value);
+        if (XENSIV_BGT60CUTRXX_STATUS_OK != result)
+        {
+            DEBUG_PRINT("xensiv_bgt60cutrxx deep sleep failed\n");
+            return result;
+        }
+    }
 
     /* Perform ADC calibration */
     result = xensiv_bgt60cutrxx_perform_adc_calibration(&radar_sensor->dev);
@@ -210,8 +224,21 @@ int32_t xensiv_bgt60cutrxx_platform_init(xensiv_bgt60cutrxx_mtb_t* radar_sensor,
     {
         uint32_t adc_err;
         xensiv_bgt60cutrxx_get_reg(&radar_sensor->dev, BGT60CUTR13B_REG_ADC_ERR_CTRL, &adc_err);
-        DEBUG_PRINT("xensiv_bgt60cutrxx_perform_adc_calibration error: 0x%08lX\n", adc_err);
+        DEBUG_PRINT("xensiv_bgt60cutrxx_perform_adc_calibration error: 0x%08" PRIX32 "\n", adc_err);
         return result;
+    }
+
+    // deactivate the xosc in case of power down mode is enabled and if deep sleep is requested after calibration is
+    // done
+    if ((radar_sensor->dev.power_mode == DEEP_SLEEP_MODE) && radar_sensor->dev.deepsleep_after_calibration)
+    {
+        result = xensiv_bgt60cutrxx_set_xosc(&radar_sensor->dev, XENSIV_BGT60CUTRXX_XOSC_POWER_DOWN);
+        if (result != XENSIV_BGT60CUTRXX_STATUS_OK)
+        {
+            DEBUG_PRINT("Error setting XOSC %" PRId32 "\n", result);
+            return result;
+        }
+        DEBUG_PRINT("XOSC power down %" PRId32 "\n", result);
     }
 
     return XENSIV_BGT60CUTRXX_STATUS_OK;

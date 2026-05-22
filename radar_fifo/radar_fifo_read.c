@@ -1,8 +1,8 @@
 /**
  * @file radar_fifo_read.c
- * @brief C file for the XENSIV(TM) BGT60CUTRXX radar FIFO interface implementation.
+ * @brief C file for the XENSIV(TM) BGT60CUTRxx radar FIFO interface implementation.
  *
- * This file provides functionality related to the XENSIV(TM) BGT60CUTRXX sensor,
+ * This file provides functionality related to the XENSIV(TM) BGT60CUTRxx sensor,
  * related to FIFO data retrieval.
  *
  ********************************************************************************
@@ -30,7 +30,7 @@ int32_t xensiv_bgt60cutrxx_get_fifo_event(xensiv_bgt60cutrxx_t* dev, xensiv_bgt6
 {
     if ((dev == NULL) || (event == NULL))
     {
-        return -1;
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_POINTER;
     }
 
     int32_t status;
@@ -73,7 +73,7 @@ int32_t xensiv_bgt60cutrxx_get_fifo_level(xensiv_bgt60cutrxx_t* dev, uint32_t* n
 {
     if ((dev == NULL) || (num_samples_available == NULL))
     {
-        return -1;
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_POINTER;
     }
 
     uint32_t fifo_status = 0;

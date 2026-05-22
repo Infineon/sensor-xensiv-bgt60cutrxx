@@ -1,3 +1,4 @@
 ./platform/linux
+./platform/linux-kernel
 ./test
 ./production

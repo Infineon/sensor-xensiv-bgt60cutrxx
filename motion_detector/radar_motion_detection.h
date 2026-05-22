@@ -76,7 +76,7 @@ typedef struct
     float elevation_deg;
     float range_m;
     float velocity_mps;
-    float antenna_rx;
+    uint8_t antenna_rx;
 } motion_detection_processed_targets_t;
 
 typedef struct
@@ -133,9 +133,9 @@ typedef struct motion_detection
     bool seq1_done;
     /** Flag to indicate if the seq 2 is done and further processing is allowed */
     bool seq2_done;
-    /** Flag to indicate if a ULP event has been occurred */
+    /** Flag to indicate if a ULP event occurred */
     bool ulp_event;
-    /** Flag to indicate if an RD event has been occurred */
+    /** Flag to indicate if an RD event occurred */
     bool rd_event;
     uint32_t ir_stat; /**< ir_stat register content of the radar sensor */
     /** sequence that triggered the irq */
@@ -160,7 +160,7 @@ typedef struct motion_detection
  * @return status indicating the success of the operation. 0 = success, otherwise failure
  */
 int32_t radar_motion_detection_init(motion_detection_t* motion_detection,
-                                    xensiv_bgt60cutrxx_t* radar_sensor,
+                                    xensiv_bgt60cutrxx_t* dev,
                                     uint32_t* rd_data_buffer,
                                     const sequence_settings_t* rd_sequence_settings,
                                     const sequence_settings_t* ulp_sequence_settings);

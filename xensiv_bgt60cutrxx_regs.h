@@ -1,8 +1,8 @@
 /**
  * @file xensiv_bgt60cutrxx_regs.h
- * @brief This file contains the register definitions for the XENSIV BGT60CUTRXX radar module.
+ * @brief This file contains the register definitions for the XENSIV BGT60CUTRxx radar module.
  *
- * This file provides the register definitions as extensions for the XENSIV BGT60CUTRXX radar
+ * This file provides the register definitions as extensions for the XENSIV BGT60CUTRxx radar
  * module.
  *
  ********************************************************************************

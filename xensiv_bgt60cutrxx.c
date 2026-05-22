@@ -1,8 +1,8 @@
 /**
  * @file xensiv_bgt60cutrxx.c
- * @brief This file contains the implementation of the XENSIV BGT60CUTRXX module.
+ * @brief This file contains the implementation of the XENSIV BGT60CUTRxx module.
  *
- * The XENSIV BGT60CUTRXX module provides functions to interact with the BGT60CUTRXX sensor.
+ * The XENSIV BGT60CUTRxx module provides functions to interact with the BGT60CUTRxx sensor.
  * It includes functions for initialization, configuration, and data retrieval from the sensor.
  * This module is specifically designed for the MCU7 Radar project.
  *
@@ -28,6 +28,7 @@
 #include <xensiv_bgt60cutrxx_regs.h>
 #include "xensiv_bgt60cutrxx.h"
 #include "xensiv_bgt60cutrxx_platform.h"
+#include <inttypes.h>
 
 /**
  * \addtogroup bgt60cutrxx_driver BGT60CUTR13 Driver
@@ -36,6 +37,8 @@
 
 /** Defines the maximum number of bytes that can be read from the FIFO within one block read.*/
 #define FIFO_MAX_SPI_BURST_SIZE_BYTES (BGT60CUTR13B_RD_MAP_ADDRESS - BGT60CUTR13B_FIFO_ADDRESS)
+/** Defines the documented maximum FIFO capacity in 16-bit ADC samples. */
+#define FIFO_MAX_ADC_SAMPLES (49152U)
 /** Defines the maximum number of bytes that can be read from RX Buffer.*/
 #define RX_BUFFER_MAX_SIZE_BYTES 0x6000
 /** Radar write register sequence length in words */
@@ -52,24 +55,24 @@
 
 
 /** Read command address sequence */
-#define SMARTAR_READ(address)                   \
-{                                           \
-    (((uint16_t)((address) & 0xFFU)) << 8), ((address) >> 8) \
+#define SMARTAR_READ(address)                                          \
+{                                                                      \
+    (((uint16_t)((address) & 0xFFU)) << 8), ((uint16_t)(address) >> 8) \
 }
 /** Write command address sequence */
-#define SMARTAR_WRITE(address, value)                        \
-{                                                        \
-    (1U << 0) | (((uint16_t)((address) & 0xFFU)) << 8), ((address) >> 8), \
-    (uint16_t)((value) & 0xFFFFLU), (uint16_t)((value) >> 16)                  \
+#define SMARTAR_WRITE(address, value)                                               \
+{                                                                                   \
+    (1U << 0) | (((uint16_t)((address) & 0xFFU)) << 8), ((uint16_t)(address) >> 8), \
+    (uint16_t)((value) & 0xFFFFLU), (uint16_t)((value) >> 16)                       \
 }
 
 
 /**
- * @brief Reads a block of registers from the XENSIV(TM) BGT60CUTRXX sensor.
+ * @brief Reads a block of registers from the XENSIV(TM) BGT60CUTRxx sensor.
  *
  * This function reads a block of registers starting from the specified address
  * and stores the values in the provided data array.
- * @param dev Pointer to the XENSIV(TM) BGT60CUTRXX device structure.
+ * @param dev Pointer to the XENSIV(TM) BGT60CUTRxx device structure.
  * @param start_address The starting address (in bytes) of the register block to read.
  * @param data Pointer to the array where the read register values will be stored. Each register is 32 bits.
  * @param length The number of bytes to read. This values must be a multiple of 4 bytes.
@@ -102,14 +105,14 @@ static bool xensiv_bgt60cutrxx_is_bgt60cutrxx(uint32_t id)
  * This function writes the clock registers of radar for device startup,
  * By default, the radar sensor uses LSB first for configuration
  *
- * @param dev Pointer to the XENSIV(TM) BGT60CUTRXX device structure.
+ * @param dev Pointer to the XENSIV(TM) BGT60CUTRxx device structure.
  * @return int32_t Returns 0 on success, or a negative error code on failure.
  */
 static int32_t xensiv_bgt60cutrxx_startup(xensiv_bgt60cutrxx_t* dev)
 {
     if (dev == NULL)
     {
-        return XENSIV_BGT60CUTRXX_STATUS_DEV_ERROR;
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_POINTER;
     }
 
     int32_t status = XENSIV_BGT60CUTRXX_STATUS_OK;
@@ -161,24 +164,89 @@ int32_t xensiv_bgt60cutrxx_detect_device(xensiv_bgt60cutrxx_t* dev)
 }
 
 
-int32_t xensiv_bgt60cutrxx_init(xensiv_bgt60cutrxx_t* dev, void* iface, xensiv_bgt60cutrxx_clk_t clk,
-                                xensiv_bgt60cutrxx_io_level_t io_level)
+int32_t bgt60cutrxx_deinit_chip(xensiv_bgt60cutrxx_t* dev)
 {
-    if ((dev == NULL) || (iface == NULL))
+    int32_t status = XENSIV_BGT60CUTRXX_STATUS_OK;
+    uint32_t reg_val;
+
+    if (dev == NULL)
+    {
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_POINTER;
+    }
+
+    // To avoid race conditions, first stop all general timers: GTMR0-3.EN = 0 (and clearing all other bits)
+    status |= xensiv_bgt60cutrxx_set_reg(dev, BGT60CUTR13B_REG_GTMR0_CTRL,
+                                         BGT60CUTR13B_GTMR0_CTRL_EN_DISABLED << BGT60CUTR13B_GTMR0_CTRL_EN_pos);
+    status |= xensiv_bgt60cutrxx_set_reg(dev, BGT60CUTR13B_REG_GTMR1_CTRL,
+                                         BGT60CUTR13B_GTMR1_CTRL_EN_DISABLED << BGT60CUTR13B_GTMR1_CTRL_EN_pos);
+    status |= xensiv_bgt60cutrxx_set_reg(dev, BGT60CUTR13B_REG_GTMR2_CTRL,
+                                         BGT60CUTR13B_GTMR2_CTRL_EN_DISABLED << BGT60CUTR13B_GTMR2_CTRL_EN_pos);
+    status |= xensiv_bgt60cutrxx_set_reg(dev, BGT60CUTR13B_REG_GTMR3_CTRL,
+                                         BGT60CUTR13B_GTMR3_CTRL_EN_DISABLED << BGT60CUTR13B_GTMR3_CTRL_EN_pos);
+    if (XENSIV_BGT60CUTRXX_STATUS_OK != status)
     {
         return XENSIV_BGT60CUTRXX_STATUS_DEV_ERROR;
+    }
+
+    // Stop current sequence: CGU_RST.FSM = 1.
+    status = xensiv_bgt60cutrxx_soft_reset(dev, RESET_FSM);
+    if (XENSIV_BGT60CUTRXX_STATUS_OK != status)
+    {
+        return status;
+    }
+
+    // Power down XOSC: CLK_WUC.PDRQ = 1.
+    status = xensiv_bgt60cutrxx_set_xosc(dev, false);
+    if (XENSIV_BGT60CUTRXX_STATUS_OK != status)
+    {
+        return status;
+    }
+
+    // Power down RCOSC: CLK_RCOSC_CTRL.MODE = OFF.
+    status = xensiv_bgt60cutrxx_get_reg(dev, BGT60CUTR13B_REG_CLK_RCOSC_CTRL, &reg_val);
+    if (XENSIV_BGT60CUTRXX_STATUS_OK != status)
+    {
+        return status;
+    }
+    reg_val &= ~BGT60CUTR13B_CLK_RCOSC_CTRL_MODE_msk;
+    reg_val |= (BGT60CUTR13B_CLK_RCOSC_CTRL_MODE_OFF << BGT60CUTR13B_CLK_RCOSC_CTRL_MODE_pos);
+    status = xensiv_bgt60cutrxx_set_reg(dev, BGT60CUTR13B_REG_CLK_RCOSC_CTRL, reg_val);
+    if (XENSIV_BGT60CUTRXX_STATUS_OK != status)
+    {
+        return status;
+    }
+
+    return XENSIV_BGT60CUTRXX_STATUS_OK;
+}
+
+
+int32_t xensiv_bgt60cutrxx_init(xensiv_bgt60cutrxx_t* dev, void* iface, xensiv_bgt60cutrxx_clk_t clk,
+                                xensiv_bgt60cutrxx_io_level_t io_level, xensiv_bgt60cutrxx_power_mode_t power_mode,
+                                bool deepsleep_after_calibration)
+{
+    int32_t status = XENSIV_BGT60CUTRXX_STATUS_OK;
+
+    if ((dev == NULL) || (iface == NULL))
+    {
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_POINTER;
     }
 
     uint32_t spi_ctrl_val = 0;
     dev->iface = iface;
     dev->clk_freq_xtal = clk;
     dev->io_level = io_level;
+    dev->power_mode = power_mode;
+    dev->deepsleep_after_calibration = deepsleep_after_calibration;
 
     // perform hard reset before initializing radar via SPI
     xensiv_bgt60cutrxx_hard_reset(dev);
 
     // Detect the device
-    xensiv_bgt60cutrxx_get_reg(dev, BGT60CUTR13B_REG_SPI_CTRL, &spi_ctrl_val);
+    status = xensiv_bgt60cutrxx_get_reg(dev, BGT60CUTR13B_REG_SPI_CTRL, &spi_ctrl_val);
+    if (XENSIV_BGT60CUTRXX_STATUS_OK != status)
+    {
+        return status;
+    }
 
     if (spi_ctrl_val == BGT60CUTR13B_REG_SPI_CTRL_RESET_VAL)
     {
@@ -187,10 +255,10 @@ int32_t xensiv_bgt60cutrxx_init(xensiv_bgt60cutrxx_t* dev, void* iface, xensiv_b
     else
     {
         DEBUG_PRINT("No device detected\n\r");
-        return -1;
+        return XENSIV_BGT60CUTRXX_STATUS_DEV_ERROR;
     }
 
-    int32_t status = xensiv_bgt60cutrxx_startup(dev);
+    status = xensiv_bgt60cutrxx_startup(dev);
 
     return status;
 }
@@ -200,7 +268,7 @@ int32_t xensiv_bgt60cutrxx_set_reg(xensiv_bgt60cutrxx_t* dev, uint16_t addr, uin
 {
     if ((dev == NULL) || (dev->iface == NULL))
     {
-        return XENSIV_BGT60CUTRXX_STATUS_DEV_ERROR;
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_POINTER;
     }
 
     int32_t status = XENSIV_BGT60CUTRXX_STATUS_OK;
@@ -223,7 +291,7 @@ int32_t xensiv_bgt60cutrxx_get_reg(xensiv_bgt60cutrxx_t* dev, uint16_t addr, uin
 {
     if ((dev == NULL) || (dev->iface == NULL) || (val == NULL))
     {
-        return XENSIV_BGT60CUTRXX_STATUS_DEV_ERROR;
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_POINTER;
     }
 
     int32_t status = XENSIV_BGT60CUTRXX_STATUS_OK;
@@ -322,7 +390,7 @@ int32_t xensiv_bgt60cutrxx_perform_adc_calibration(xensiv_bgt60cutrxx_t* dev)
         }
         if (timeout <= 0)
         {
-            DEBUG_PRINT("ADC calibration timeout: ir_stat: 0x%08lX\n\r", ir_stat);
+            DEBUG_PRINT("ADC calibration timeout: ir_stat: 0x%08" PRIX32 "\n\r", ir_stat);
             return XENSIV_BGT60CUTRXX_STATUS_TIMEOUT_ERROR;
         }
     }
@@ -332,7 +400,7 @@ int32_t xensiv_bgt60cutrxx_perform_adc_calibration(xensiv_bgt60cutrxx_t* dev)
         (BGT60CUTR13B_IR_STAT_SADC_ERR_MSK | BGT60CUTR13B_IR_STAT_ADC1_ERR_MSK | BGT60CUTR13B_IR_STAT_ADC2_UF_ERR_MSK |
          BGT60CUTR13B_IR_STAT_ADC3_OF_ERR_MSK))
     {
-        DEBUG_PRINT("ADC calibration error detected: ir_stat: 0x%08lX\n\r", ir_stat);
+        DEBUG_PRINT("ADC calibration error detected: ir_stat: 0x%08" PRIX32 "\n\r", ir_stat);
         return XENSIV_BGT60CUTRXX_STATUS_ADC_CALIBRATION_ERROR;
     }
 
@@ -395,6 +463,53 @@ int32_t xensiv_bgt60cutrxx_set_motion_detection(xensiv_bgt60cutrxx_t* dev, uint1
 }
 
 
+int32_t xensiv_bgt60cutrxx_wakeup(xensiv_bgt60cutrxx_t* dev)
+{
+    int32_t ret = XENSIV_BGT60CUTRXX_STATUS_OK;
+    int32_t timeout = XOSC_POWER_DOWN_TIMEOUT_US;
+
+
+    // ensure that the sensor is in power down mode to avoid that a communication is started, shortly before the sensor
+    // enters power down
+    while (timeout > 0)
+    {
+        ret = xensiv_bgt60cutrxx_get_xosc_state(dev);
+        if (ret != XENSIV_BGT60CUTRXX_STATUS_OK)
+        {
+            DEBUG_PRINT("Error reading XOSC state: %" PRId32 "\n", ret);
+            return ret;
+        }
+        if (!(dev->xosc_active))
+        {
+            DEBUG_PRINT("XOSC power down %" PRId32 "\n", ret);
+            break;
+        }
+
+        timeout -= XOSC_POWER_DOWN_POLLING_INTERVALL_US;
+        xensiv_bgt60cutrxx_platform_delay_us(XOSC_POWER_DOWN_POLLING_INTERVALL_US);
+    }
+    if (timeout <= 0)
+    {
+        DEBUG_PRINT("XOSC timeout %" PRId32 "\n", ret);
+        return XENSIV_BGT60CUTRXX_STATUS_TIMEOUT_ERROR;
+    }
+
+    // to ensure that the sensor is settled in power down mode and until it is ready to be woken up again
+    xensiv_bgt60cutrxx_platform_delay_us(XOSC_POWER_DOWN_SETTLE_TIME_US);
+
+    ret = xensiv_bgt60cutrxx_set_xosc(dev, XENSIV_BGT60CUTRXX_XOSC_POWER_UP);
+    if (ret != XENSIV_BGT60CUTRXX_STATUS_OK)
+    {
+        DEBUG_PRINT("Error setting XOSC %" PRId32 "\n", ret);
+    }
+
+    // wait until sensor has woken up
+    xensiv_bgt60cutrxx_platform_delay_us(XOSC_POWER_DOWN_WAKE_UP_TIME_US);
+
+    return ret;
+}
+
+
 int32_t xensiv_bgt60cutrxx_get_xosc_state(xensiv_bgt60cutrxx_t* dev)
 {
     int32_t status = XENSIV_BGT60CUTRXX_STATUS_OK;
@@ -403,8 +518,9 @@ int32_t xensiv_bgt60cutrxx_get_xosc_state(xensiv_bgt60cutrxx_t* dev)
     status = xensiv_bgt60cutrxx_get_reg(dev, BGT60CUTR13B_REG_CLK_STAT, &clk_state);
     if (XENSIV_BGT60CUTRXX_STATUS_OK == status)
     {
-        dev->xosc_active = (clk_state & BGT60CUTR13B_CLK_STAT_XOSC_STATE_msk) ==
-                           BGT60CUTR13B_CLK_STAT_XOSC_STATE_ACTIVE;
+        dev->xosc_active =
+            ((clk_state & BGT60CUTR13B_CLK_STAT_XOSC_STATE_msk) >>
+             BGT60CUTR13B_CLK_STAT_XOSC_STATE_pos) == BGT60CUTR13B_CLK_STAT_XOSC_STATE_ACTIVE;
     }
 
     return status;
@@ -424,6 +540,10 @@ int32_t xensiv_bgt60cutrxx_set_xosc(xensiv_bgt60cutrxx_t* dev, bool val)
             reg = (reg & ~BGT60CUTR13B_CLK_WUC_PURQ_msk) |
                   (BGT60CUTR13B_CLK_WUC_PURQ_TRIG<<BGT60CUTR13B_CLK_WUC_PURQ_pos);
             status = xensiv_bgt60cutrxx_set_reg(dev, BGT60CUTR13B_REG_CLK_WUC, reg);
+            if (XENSIV_BGT60CUTRXX_STATUS_OK == status)
+            {
+                dev->xosc_active = 1;
+            }
         }
     }
     else
@@ -432,7 +552,7 @@ int32_t xensiv_bgt60cutrxx_set_xosc(xensiv_bgt60cutrxx_t* dev, bool val)
         if (XENSIV_BGT60CUTRXX_STATUS_OK == status)
         {
             reg = (reg & ~BGT60CUTR13B_CLK_WUC_PDRQ_msk) |
-                  (BGT60CUTR13B_CLK_WUC_PDRQ_TRIG<<BGT60CUTR13B_CLK_WUC_PDRQ_pos);
+                  ((uint32_t)BGT60CUTR13B_CLK_WUC_PDRQ_TRIG<<BGT60CUTR13B_CLK_WUC_PDRQ_pos);
             status = xensiv_bgt60cutrxx_set_reg(dev, BGT60CUTR13B_REG_CLK_WUC, reg);
             if (XENSIV_BGT60CUTRXX_STATUS_OK == status)
             {
@@ -499,7 +619,7 @@ int32_t xensiv_bgt60cutrxx_get_rd_map(xensiv_bgt60cutrxx_t* dev, uint32_t* rd_da
 {
     if ((dev == NULL) || (dev->iface == NULL) || (rd_data == NULL))
     {
-        return XENSIV_BGT60CUTRXX_STATUS_DEV_ERROR;
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_POINTER;
     }
 
     int32_t status = XENSIV_BGT60CUTRXX_STATUS_OK;
@@ -518,11 +638,16 @@ int32_t xensiv_bgt60cutrxx_get_fifo(xensiv_bgt60cutrxx_t* dev, fifo_entry_t* dat
 {
     if ((dev == NULL) || (dev->iface == NULL) || (data == NULL))
     {
-        return XENSIV_BGT60CUTRXX_STATUS_DEV_ERROR;
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_POINTER;
+    }
+
+    if (num_of_fifo_entries > FIFO_MAX_ADC_SAMPLES)
+    {
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_PARAMETER;
     }
 
     int32_t status = XENSIV_BGT60CUTRXX_STATUS_OK;
-    uint32_t bytes_to_read = num_of_fifo_entries * sizeof(fifo_entry_t);
+    int32_t bytes_to_read = num_of_fifo_entries * sizeof(fifo_entry_t);
 
     while (bytes_to_read > 0)
     {
@@ -558,15 +683,11 @@ int32_t xensiv_bgt60cutrxx_set_io_level(xensiv_bgt60cutrxx_t* dev, xensiv_bgt60c
 {
     int32_t status = XENSIV_BGT60CUTRXX_STATUS_OK;
     uint32_t reg = 0;
-    uint32_t value = 0;
+    uint32_t value = BGT60CUTR13B_IO_CTRL_IO_LVL_1V8;
 
     if (level == BGT60CUTRXX_IO_LEVEL_1V2)
     {
         value = BGT60CUTR13B_IO_CTRL_IO_LVL_1V2;
-    }
-    else
-    {
-        value = BGT60CUTR13B_IO_CTRL_IO_LVL_1V8;
     }
 
     status = xensiv_bgt60cutrxx_get_reg(dev, BGT60CUTR13B_REG_IO_CTRL, &reg);
@@ -588,7 +709,7 @@ int32_t xensiv_bgt60cutrxx_read_calibration_data(xensiv_bgt60cutrxx_t* dev,
 {
     if ((dev == NULL) || (calibration_settings == NULL) || (calibration_data == NULL))
     {
-        return XENSIV_BGT60CUTRXX_STATUS_DEV_ERROR;
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_POINTER;
     }
 
     int32_t status = XENSIV_BGT60CUTRXX_STATUS_OK;
@@ -622,7 +743,7 @@ static int32_t xensiv_bgt60cutrxx_read_register_block(xensiv_bgt60cutrxx_t* dev,
 {
     if ((dev == NULL) || (dev->iface == NULL) || (data == NULL))
     {
-        return XENSIV_BGT60CUTRXX_STATUS_DEV_ERROR;
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_POINTER;
     }
 
     int32_t status = XENSIV_BGT60CUTRXX_STATUS_OK;

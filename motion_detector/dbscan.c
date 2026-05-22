@@ -1,4 +1,5 @@
 #include "dbscan.h"
+#include "xensiv_bgt60cutrxx.h"
 #include <float.h>
 #include <math.h>
 #include <stddef.h>
@@ -8,29 +9,38 @@
 #ifndef M_PI
 #define M_PI (3.14159265f)
 #endif
+
+#define DBSCAN_SIN_COS_SAFE_LIMIT_RAD (31.0f)
+
 /**
  * @brief Convert polar coordinates to Cartesian coordinates
  *
  * @param polar Pointer to polar coordinates
  * @param cartesian Pointer to output Cartesian coordinates
+ * @return int32_t Returns 0 on success, or a negative error code on failure
  */
-static void polar_to_cartesian(const point_polar_t* polar, point_3d_t* cartesian)
+static int32_t polar_to_cartesian(const point_polar_t* polar, point_3d_t* cartesian)
 {
+    if ((!isfinite(polar->range_m)) || (!isfinite(polar->azimuth_deg)) || (!isfinite(polar->elevation_deg)))
+    {
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_PARAMETER;
+    }
+
+    if ((polar->azimuth_deg < -90.0f) || (polar->azimuth_deg > 90.0f) || (polar->elevation_deg < -90.0f) ||
+        (polar->elevation_deg > 90.0f))
+    {
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_PARAMETER;
+    }
+
     float range = polar->range_m;
     float azimuth_rad = polar->azimuth_deg * (float)M_PI / 180.0f;
     float elevation_rad = polar->elevation_deg * (float)M_PI / 180.0f;
 
-    // Clamp angles to valid range for trigonometric functions to avoid implementation-defined behavior
-    // Note: Input angles in degrees are expected to be azimuth: [-180, 180], elevation: [-90, 90]
-    // After conversion to radians: azimuth: [-π, π], elevation: [-π/2, π/2]
-    // Both are well within the safe range [-31, 31] for sinf/cosf
-    if ((azimuth_rad < -31.0f) || (azimuth_rad > 31.0f))
+    // satisfy math library sinf/cosf bounding checks (prevents static analysis warnings)
+    if ((azimuth_rad < -DBSCAN_SIN_COS_SAFE_LIMIT_RAD) || (azimuth_rad > DBSCAN_SIN_COS_SAFE_LIMIT_RAD) ||
+        (elevation_rad < -DBSCAN_SIN_COS_SAFE_LIMIT_RAD) || (elevation_rad > DBSCAN_SIN_COS_SAFE_LIMIT_RAD))
     {
-        azimuth_rad = 0.0f;
-    }
-    if ((elevation_rad < -31.0f) || (elevation_rad > 31.0f))
-    {
-        elevation_rad = 0.0f;
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_PARAMETER;
     }
 
     float cos_elevation = cosf(elevation_rad);
@@ -38,6 +48,8 @@ static void polar_to_cartesian(const point_polar_t* polar, point_3d_t* cartesian
     cartesian->x = range * cos_elevation * cosf(azimuth_rad);
     cartesian->y = range * cos_elevation * sinf(azimuth_rad);
     cartesian->z = range * sinf(elevation_rad);
+
+    return XENSIV_BGT60CUTRXX_STATUS_OK;
 }
 
 
@@ -84,8 +96,16 @@ static inline float wrap_deg_pm180(float a)
  * @param cartesian Pointer to Cartesian coordinates
  * @param polar Pointer to output polar coordinates
  */
-static void cartesian_to_polar(point_3d_t* cartesian, point_polar_t* polar)
+static void cartesian_to_polar(const point_3d_t* cartesian, point_polar_t* polar)
 {
+    if ((!isfinite(cartesian->x)) || (!isfinite(cartesian->y)) || (!isfinite(cartesian->z)))
+    {
+        polar->range_m = 0.0f;
+        polar->azimuth_deg = 0.0f;
+        polar->elevation_deg = 0.0f;
+        return;
+    }
+
     // Range (Euclidean norm)
     float rxy = hypotf(cartesian->x, cartesian->y); // distance projected onto x-y plane
     float r   = sqrtf(cartesian->x*cartesian->x + cartesian->y*cartesian->y + cartesian->z*cartesian->z);
@@ -124,22 +144,22 @@ static int32_t get_unused_point_index(dbscan_t* result)
 }
 
 
-int dbscan_initialize(dbscan_t* result)
+int32_t dbscan_initialize(dbscan_t* result)
 {
     if (result == NULL)
     {
-        return -1; // Invalid input
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_POINTER;
     }
 
     // Basic parameter validation
-    if (result->eps <= 0.0f)
+    if (result->eps_m <= 0.0f)
     {
-        return -2; // Invalid eps
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_PARAMETER;
     }
 
     if (result->min_samples <= 0)
     {
-        return -3; // Invalid min_samples
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_PARAMETER;
     }
 
     // Initialize state
@@ -152,7 +172,7 @@ int dbscan_initialize(dbscan_t* result)
         result->points_index[i] = DBSCAN_UNUSED_POINT;
     }
 
-    return 0; // Success
+    return XENSIV_BGT60CUTRXX_STATUS_OK;
 }
 
 
@@ -160,7 +180,7 @@ int32_t dbscan_get_num_points(dbscan_t* result)
 {
     if (result == NULL)
     {
-        return -1; // Invalid input
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_POINTER;
     }
 
     int num_points = 0;
@@ -176,34 +196,48 @@ int32_t dbscan_get_num_points(dbscan_t* result)
 }
 
 
-int dbscan_add_point(dbscan_t* result, const point_polar_t* point, uint8_t index)
+int32_t dbscan_add_point(dbscan_t* result, const point_polar_t* point, uint8_t index)
 {
-    if ((result == NULL) || (point == NULL) || (index == DBSCAN_UNUSED_POINT))
+    if ((result == NULL) || (point == NULL))
     {
-        return -1; // Invalid input
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_POINTER;
+    }
+
+    if (index == DBSCAN_UNUSED_POINT)
+    {
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_PARAMETER;
     }
 
     const int32_t new_point = get_unused_point_index(result);
     if (new_point >= DBSCAN_MAX_POINTS)
     {
-        return -2; // No space for more points
+        return XENSIV_BGT60CUTRXX_STATUS_NO_MEMORY; // No space for more points
     }
 
     // Convert point to Cartesian and add
-    polar_to_cartesian(point, &result->points[new_point]);
+    int32_t status = polar_to_cartesian(point, &result->points[new_point]);
+    if (status < 0)
+    {
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_PARAMETER;
+    }
 
     // Mark point as used
     result->points_index[new_point] = index;  // associate to given index
 
-    return 0; // Success
+    return XENSIV_BGT60CUTRXX_STATUS_OK;
 }
 
 
 int32_t dbscan_remove_points(dbscan_t* result, uint8_t index)
 {
-    if ((result == NULL) || (index == DBSCAN_UNUSED_POINT))
+    if (result == NULL)
     {
-        return -1; // Invalid input
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_POINTER;
+    }
+
+    if (index == DBSCAN_UNUSED_POINT)
+    {
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_PARAMETER;
     }
 
     // Remove all points associated to given index
@@ -218,17 +252,17 @@ int32_t dbscan_remove_points(dbscan_t* result, uint8_t index)
         }
     }
 
-    return points_removed; // Return number of points removed
+    return points_removed;
 }
 
 
 // Stack-based neighbor finding with early termination
-static int find_neighbors(const dbscan_t* result, int point_idx,
-                          int32_t neighbors[DBSCAN_MAX_POINTS])
+static int32_t find_neighbors(const dbscan_t* result, int point_idx,
+                              int32_t neighbors[DBSCAN_MAX_POINTS])
 {
     int neighbor_count           = 0;
     const point_3d_t* query_point = &result->points[point_idx];
-    const float eps_squared      = result->eps * result->eps;
+    const float eps_squared      = result->eps_m * result->eps_m;
 
     // Optimized neighbor search with squared distance comparison
     for (int i = 0; i < DBSCAN_MAX_POINTS; i++)
@@ -248,19 +282,19 @@ static int find_neighbors(const dbscan_t* result, int point_idx,
 
         // Quick rejection tests before expensive distance calculation
         float dx = query_point->x - candidate->x;
-        if ((dx > result->eps) || (dx < -result->eps))
+        if ((dx > result->eps_m) || (dx < -result->eps_m))
         {
             continue;
         }
 
         float dy = query_point->y - candidate->y;
-        if ((dy > result->eps) || (dy < -result->eps))
+        if ((dy > result->eps_m) || (dy < -result->eps_m))
         {
             continue;
         }
 
         float dz = query_point->z - candidate->z;
-        if ((dz > result->eps) || (dz < -result->eps))
+        if ((dz > result->eps_m) || (dz < -result->eps_m))
         {
             continue;
         }
@@ -353,16 +387,16 @@ static void expand_cluster(dbscan_t* result, int point_idx,
 }
 
 
-int dbscan_cluster(dbscan_t* result)
+int32_t dbscan_cluster(dbscan_t* result)
 {
     // Input validation
     if (result == NULL)
     {
-        return -1;
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_POINTER;
     }
-    if ((result->eps <= 0.0f) || (result->min_samples <= 0))
+    if ((result->eps_m <= 0.0f) || (result->min_samples <= 0))
     {
-        return -1;
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_PARAMETER;
     }
 
     // Reset all cluster results
@@ -418,12 +452,12 @@ int32_t dbscan_get_cluster_centroid_3d(const dbscan_t* result, int32_t cluster_i
     // Input validation
     if ((result == NULL) || (centroid == NULL))
     {
-        return -1; // Invalid input
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_POINTER;
     }
 
     if ((cluster_index < 0) || (cluster_index >= result->num_clusters))
     {
-        return -1; // Invalid cluster index
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_PARAMETER;
     }
 
     // Initialize centroid accumulator

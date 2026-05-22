@@ -1,10 +1,13 @@
 var searchData=
 [
-  ['layer_0',['3.1 Platform-Independent Layer',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md38',1,'']]],
-  ['layer_20hal_1',['3.2 Platform-Dependent Layer (HAL)',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md42',1,'']]],
-  ['layer_20implementation_2',['5. Platform Abstraction Layer Implementation',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md52',1,'']]],
-  ['level_20pin_20connections_3',['4.2 Chip-Level Pin Connections',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md48',1,'']]],
-  ['libraries_4',['Required Standard Libraries',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md35',1,'']]],
-  ['library_20with_20another_20platform_5',['Using the library with another platform',['../index.html#autotoc_md4',1,'']]],
-  ['localization_20and_20masking_6',['Clutter localization and masking',['../index.html#autotoc_md12',1,'']]]
+  ['main_20data_20structure_0',['Main data structure',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md57',1,'']]],
+  ['management_20api_1',['Power management API',['../index.html#autotoc_md6',1,'']]],
+  ['mapping_2',['Pin mapping',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md79',1,'']]],
+  ['masking_3',['Clutter localization and masking',['../index.html#autotoc_md29',1,'']]],
+  ['matrix_20update_4',['Calibration matrix update',['../index.html#autotoc_md33',1,'']]],
+  ['memory_20read_20operation_5',['Figure 8. Timing diagram for continuous SPI memory read operation',['../index.html#autotoc_md19',1,'']]],
+  ['more_20information_6',['More information',['../index.html#autotoc_md34',1,'']]],
+  ['motion_20detection_7',['Motion detection',['../index.html#autotoc_md21',1,'']]],
+  ['motion_20detection_20application_8',['Motion detection application',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#motion-detection-application',1,'']]],
+  ['motion_20detection_20output_9',['Motion detection output',['../index.html#autotoc_md22',1,'']]]
 ];

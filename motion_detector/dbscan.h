@@ -67,7 +67,7 @@ typedef struct
 typedef struct
 {
     // Input parameters
-    float eps;                                  /**< Maximum distance between two points to be considered neighbors */
+    float eps_m;                                /**< Maximum distance between two points to be considered neighbors */
     int32_t min_samples;                        /**< Minimum number of points required to form a cluster */
     uint8_t points_index[DBSCAN_MAX_POINTS];    /**< Index mapping for points in the dataset */
     point_3d_t points[DBSCAN_MAX_POINTS];        /**< Array of 3D points in Cartesian coordinates */
@@ -86,7 +86,7 @@ typedef struct
  * @param result Pointer to DBSCAN structure to initialize
  * @return 0 on success, negative value on error
  */
-int dbscan_initialize(dbscan_t* result);
+int32_t dbscan_initialize(dbscan_t* result);
 
 /**
  * @brief Get the current number of points in the DBSCAN dataset
@@ -107,7 +107,7 @@ int32_t dbscan_get_num_points(dbscan_t* result);
  * @param index Index value to associate with this point
  * @return 0 on success, negative value on error (e.g., dataset full)
  */
-int dbscan_add_point(dbscan_t* result, const point_polar_t* point, uint8_t index);
+int32_t dbscan_add_point(dbscan_t* result, const point_polar_t* point, uint8_t index);
 
 /**
  * @brief Remove all points with the specified index from the dataset
@@ -131,7 +131,7 @@ int32_t dbscan_remove_points(dbscan_t* result, uint8_t index);
  * @param result Pointer to DBSCAN result structure containing points and parameters
  * @return 0 on success, negative value on error
  */
-int dbscan_cluster(dbscan_t* result);
+int32_t dbscan_cluster(dbscan_t* result);
 
 /**
  * @brief Get cluster centroid in cartesian coordinates for given cluster index

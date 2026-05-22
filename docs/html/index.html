@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=11" />
     <meta name="generator" content="Doxygen 1.13.2" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>sensor-xensiv-bgt60cutrxx: XENSIV&trade; BGT60CUTRXX radar sensor</title>
+    <title>sensor-xensiv-bgt60cutrxx: XENSIV&trade; BGT60CUTRxx radar sensor library</title>
     <link href="tabs.css" rel="stylesheet" type="text/css" />
     <script type="text/javascript" src="jquery.js"></script>
     <script type="text/javascript" src="dynsections.js"></script>
@@ -25,6 +25,13 @@
   $(function() { init_search(); });
 /* @license-end */
 </script>
+    <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
     <link href="doxygen_style.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -36,7 +43,7 @@
                             <td id="projectlogo"><img alt="Logo" src="logo.png"  /></td>
                             <td id="projectalign">
                                 <div id="projectname">sensor-xensiv-bgt60cutrxx<span
-                                        id="projectnumber">&#160;1.0.0</span>
+                                        id="projectnumber">&#160;1.1.0</span>
                                 </div>
                             </td>
                             <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -106,45 +113,66 @@ $(function(){initNavTree('index.html',''); initResizable(true); });
 </div>
 
 <div><div class="header">
-  <div class="headertitle"><div class="title">XENSIV&trade; BGT60CUTRXX radar sensor </div></div>
+  <div class="headertitle"><div class="title">XENSIV&trade; BGT60CUTRxx radar sensor library </div></div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p><a class="anchor" id="md_README"></a></p>
-<p>This library provides driver functions to interface with the XENSIV&trade; BGT60CUTRxx 60GHz FMCW radar alongside data processing modules for radar on-chip motion detection blocks. This library can be set up to use the ModusToolbox&trade; HAL interface or user-provided communication functions. For more information about the XENSIV&trade; radar sensors, visit Infineon's <a href="https://www.infineon.com/cms/en/product/sensor/radar-sensors/radar-sensors-for-iot/60ghz-radar/">60GHz radar sensors for IoT</a> webpage.</p>
+<p>The XENSIV&trade; BGT60CUTRxx radar sensor library offers driver functions to interface with the XENSIV™ BGT60CUTRxx CMOS 60 GHz radar sensor. It also includes data processing modules for on-chip motion detection blocks. It is compatible with the XENSIV™ CMOS 60 GHz radar sensors: BGT60CUTR13AIP</p>
+<p>This library can be set up to use the ModusToolbox&trade; HAL interface or user-provided communication functions. For more information about the XENSIV&trade; radar sensors, visit Infineon's <a href="https://www.infineon.com/products/sensor/radar-sensors/radar-sensors-for-iot/60ghz-cmos-radar">60 GHz CMOS radar sensors for IoT</a> webpage.</p>
 <p>For further information, please visit the website <a href="https://www.infineon.com/part/BGT60CUTR13AIP">https://www.infineon.com/part/BGT60CUTR13AIP</a>.</p>
-<p>Howto port the driver to other platforms is provided in <a class="el" href="md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html">porting guide</a>.</p>
-<h2><a class="anchor" id="autotoc_md1"></a>
-Features</h2>
+<p>How to port the driver to other platforms is provided in <a class="el" href="md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html">porting guide</a>.</p>
+<h1><a class="anchor" id="autotoc_md1"></a>
+Features</h1>
 <ul>
 <li>On-chip data processing for motion detection</li>
 <li>Range and angle estimation of up to 8 targets</li>
-<li>Clutter localization and masking</li>
-<li>Clustering based on ULP events</li>
+<li>Clutter localization and masking of dynamic targets, based on RD motion detection events</li>
+<li>Clustering of static targets, based on ULP motion detection events</li>
+<li>Convergence module for temporal fusion of RD and ULP results into a flicker-free output</li>
+<li>Power down / deep sleep mode support with configurable post-calibration power state</li>
 <li>Raw frame data acquisition</li>
 <li>SPI communication</li>
+<li>Arduino platform support (see <a class="el" href="md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html">porting guide</a>)</li>
+<li>Linux kernel driver for Raspberry Pi and similar SBCs (not part of the release, but available on request)</li>
 </ul>
-<p><b>Figure 1. Library architecture</b></p>
-<div class="plantumlgraph">
-<img src="inline_umlgraph_1.png" />
-</div>
-<h1><a class="anchor" id="autotoc_md2"></a>
+<p><a href="https://github.com/Infineon/mtb-example-psoc6-cmos-radar-motion-detection">View this README on GitHub.</a></p>
+<h2><a class="anchor" id="autotoc_md2"></a>
+Figure 1. Library architecture</h2>
+<div class="fragment"><div class="line">---</div>
+<div class="line">title: Library Architecture</div>
+<div class="line">---</div>
+<div class="line">flowchart TD</div>
+<div class="line">    Start[&quot;Raw Frame Data&quot;]</div>
+<div class="line">    FIFO[&quot;FIFO Read&quot;]</div>
+<div class="line">    Clutter[&quot;Clutter Removal&quot;]</div>
+<div class="line">    Clustering[&quot;Clustering&quot;]</div>
+<div class="line">    MD[&quot;Motion Detection&quot;]</div>
+<div class="line">    API[&quot;BGT60CUTRxx Low Level Driver Functions&quot;]</div>
+<div class="line"> </div>
+<div class="line">    Start --&gt; FIFO</div>
+<div class="line">    FIFO --&gt; API</div>
+<div class="line">    Clutter --&gt; MD</div>
+<div class="line">    Clustering --&gt; MD</div>
+<div class="line">    MD --&gt; API</div>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md3"></a>
 Quick start</h1>
 <p>The initialization of the XENSIV&trade; BGT60CUTRxx radar sensor requires a list of register values that can be generated using the Radar Configuration tool.</p>
-<p>Code snippets for using the XENSIV&trade; BGT60TRxx Radar Sensor library are provided below:</p>
+<p>Code snippets for using the XENSIV&trade; BGT60CUTRxx Radar Sensor library are provided below:</p>
 <ul>
-<li>The <em>radar_fifo</em> folder contains the snippets for reading the raw radar data from the FIFO of the BGT60CUTRXX sensor</li>
-<li>The <em>motion_detection</em> folder contains the snippets for reading the motion detection information from the BGT60CUTRXX sensor</li>
+<li>The <em>radar_fifo</em> folder contains the snippets for reading the raw radar data from the FIFO of the BGT60CUTRxx sensor</li>
+<li>The <em>motion_detection</em> folder contains the snippets for reading the motion detection information from the BGT60CUTRxx sensor</li>
 </ul>
 <p>Follow the steps below to create a simple application that checks basic functionality and connectivity to the radar sensor. The application configures the sensor according to the predefined configuration, starts the frame generation, and reads frame data from the internal radar buffer.</p>
 <ol type="1">
 <li>Create an empty ModusToolbox&trade; application for your board, e.g., CYSBSYSKIT-DEV-01</li>
 <li><p class="startli">Add this library, <em>sensor-xensiv-bgt60cutrxx</em>, to the application using <b>Library Manager</b></p>
-<p class="startli"><b>Figure 2. Library Manager</b></p>
+<p class="startli">Figure 2. Library Manager</p>
 </li>
 </ol>
 <div class="image">
 <img src="library_manager.png" alt=""/>
-</div>
+<div class="caption">
+Library Manager</div></div>
     <ol type="1">
 <li>Add the <em>retarget-io</em> library using <b>Library Manager</b></li>
 <li>Define the following as required for your hardware/kit configuration:<ul>
@@ -155,7 +183,7 @@ Quick start</h1>
 <li><code>PIN_XENSIV_BGT60CUTRXX_IRQ</code></li>
 <li><code>PIN_XENSIV_BGT60CUTRXX_RSTN</code></li>
 <li><p class="startli"><code>PIN_XENSIV_BGT60CUTRXX_LDO_EN</code></p>
-<p class="startli">&gt; <b>Note:</b> &gt; 1. The pins in the code example below correspond to the ones used in the <a href="https://github.com/Infineon/TARGET_CYSBSYSKIT-DEV-01">CYBSYSKIT-DEV-01</a> kit &gt; 2. The LDO_EN pin is not directly connected to the sensor and may not be present in all boards</p>
+<p class="startli">&gt; <b>Note:</b> &gt; 1. The pins in the code example below correspond to the ones used in the <a href="https://github.com/Infineon/TARGET_CYSBSYSKIT-DEV-01">CYSBSYSKIT-DEV-01</a> kit &gt; 2. The LDO_EN pin is not directly connected to the sensor and may not be present in all boards</p>
 </li>
 </ul>
 </li>
@@ -276,7 +304,7 @@ Quick start</h1>
 <div class="line">    <span class="comment">/* Enable LDO */</span></div>
 <div class="line">    result |= cyhal_gpio_init(PIN_XENSIV_BGT60CUTRXX_LDO_EN, CYHAL_GPIO_DIR_OUTPUT, CYHAL_GPIO_DRIVE_STRONG, 1);</div>
 <div class="line"> </div>
-<div class="line">    <span class="comment">/* Set specific pins to disable BGT60CUTRXX bootloader */</span></div>
+<div class="line">    <span class="comment">/* Set specific pins to disable BGT60CUTRxx bootloader */</span></div>
 <div class="line">    result |= cyhal_gpio_init(PIN_XENSIV_BGT60CUTRXX_DIO2, CYHAL_GPIO_DIR_OUTPUT, CYHAL_GPIO_DRIVE_STRONG, 1);</div>
 <div class="line">    result |= cyhal_gpio_init(PIN_XENSIV_BGT60CUTRXX_DIO3, CYHAL_GPIO_DIR_OUTPUT, CYHAL_GPIO_DRIVE_STRONG, 1);</div>
 <div class="line"> </div>
@@ -415,7 +443,7 @@ Quick start</h1>
 <div class="line">    }</div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">// Radar sensor initialization</span></div>
-<div class="line">    result = xensiv_bgt60cutrxx_platform_init(&amp;sensor, &amp;mcu_iface_config, register_list, ARRAY_SIZE(register_list));</div>
+<div class="line">    result = xensiv_bgt60cutrxx_platform_init(&amp;sensor, &amp;mcu_iface_config, register_list, ARRAY_SIZE(register_list), ACTIVE_MODE, <span class="keyword">false</span>);</div>
 <div class="line">    <span class="keywordflow">if</span> (XENSIV_BGT60CUTRXX_STATUS_OK != result)</div>
 <div class="line">    {</div>
 <div class="line">        printf(<span class="stringliteral">&quot;Error initializing radar sensor\n&quot;</span>);</div>
@@ -498,14 +526,15 @@ Quick start</h1>
 <li>Connect the board to your PC using the provided USB cable through the KitProg3 USB connector</li>
 <li>Open a terminal program and select the KitProg3 COM port. Set the serial port parameters to 8N1 and 115200 baud</li>
 <li><p class="startli">Build the application and program the kit. After programming, the application starts automatically and prints the following output on serial terminal</p>
-<p class="startli"><b>Figure 3. Terminal Output</b></p>
+<p class="startli">Figure 3. Terminal Output</p>
 </li>
 </ol>
 <div class="image">
 <img src="terminal-output.png" alt=""/>
-</div>
-    <h1><a class="anchor" id="autotoc_md3"></a>
-BGT60CUTRXX driver functions</h1>
+<div class="caption">
+Terminal Output</div></div>
+    <h1><a class="anchor" id="autotoc_md4"></a>
+BGT60CUTRxx driver functions</h1>
 <p>The driver part of the library is divided into two modules. The radar-specific module contains the functions to reset, initialize, detect, configure, and read the data from radar. These functions are part of the following code files:</p>
 <ul>
 <li><em>xensiv_bgt60cutrxx.c</em></li>
@@ -517,7 +546,40 @@ BGT60CUTRXX driver functions</h1>
 <li><em>xensiv_bgt60cutrxx_mtb.c</em></li>
 <li><em>xensiv_bgt60cutrxx_mtb.h</em></li>
 </ul>
-<h2><a class="anchor" id="autotoc_md4"></a>
+<h2><a class="anchor" id="autotoc_md5"></a>
+Error codes</h2>
+<p>All driver functions return <code>int32_t</code>. A return value of <code>0</code> (<code>XENSIV_BGT60CUTRXX_STATUS_OK</code>) indicates success. All error codes are <b>negative integers</b>:</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Constant   </th><th class="markdownTableHeadNone">Value   </th><th class="markdownTableHeadNone">Description    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>XENSIV_BGT60CUTRXX_STATUS_OK</code>   </td><td class="markdownTableBodyNone"><code>0</code>   </td><td class="markdownTableBodyNone">Success    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>XENSIV_BGT60CUTRXX_STATUS_INVALID_POINTER</code>   </td><td class="markdownTableBodyNone"><code>-1</code>   </td><td class="markdownTableBodyNone">Invalid memory pointer supplied    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>XENSIV_BGT60CUTRXX_STATUS_INVALID_PARAMETER</code>   </td><td class="markdownTableBodyNone"><code>-2</code>   </td><td class="markdownTableBodyNone">Invalid parameter value    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>XENSIV_BGT60CUTRXX_STATUS_NO_MEMORY</code>   </td><td class="markdownTableBodyNone"><code>-3</code>   </td><td class="markdownTableBodyNone">Insufficient memory    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>XENSIV_BGT60CUTRXX_STATUS_SPI_ERROR</code>   </td><td class="markdownTableBodyNone"><code>-4</code>   </td><td class="markdownTableBodyNone">SPI communication error    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>XENSIV_BGT60CUTRXX_STATUS_DEV_ERROR</code>   </td><td class="markdownTableBodyNone"><code>-5</code>   </td><td class="markdownTableBodyNone">Device detection error    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>XENSIV_BGT60CUTRXX_STATUS_TIMEOUT_ERROR</code>   </td><td class="markdownTableBodyNone"><code>-6</code>   </td><td class="markdownTableBodyNone">Operation timeout    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>XENSIV_BGT60CUTRXX_STATUS_ADC_CALIBRATION_ERROR</code>   </td><td class="markdownTableBodyNone"><code>-7</code>   </td><td class="markdownTableBodyNone">ADC calibration error   </td></tr>
+</table>
+<blockquote class="doxtable">
+<p><b>Note:</b> Error codes changed from positive to negative values compared to versions prior to v1.1.0. Update any application code that checks for specific error code values. </p>
+</blockquote>
+<h2><a class="anchor" id="autotoc_md6"></a>
+Power management API</h2>
+<p>Two functions are provided for controlling the sensor power state at runtime:</p>
+<ul>
+<li><b><code>xensiv_bgt60cutrxx_wakeup(dev)</code></b> — Wakes the sensor from deep sleep by toggling the XOSC power-up sequence and polling until the oscillator is stable.</li>
+<li><b><code>xensiv_bgt60cutrxx_deactivate(dev)</code></b> — Deactivates the sensor (equivalent to power down), waiting for the XOSC to report power-down state before returning.</li>
+</ul>
+<h2><a class="anchor" id="autotoc_md7"></a>
 Using the library with another platform</h2>
 <p>The library can be used in any platform excluding the following files from the project:</p>
 <ul>
@@ -528,7 +590,7 @@ Using the library with another platform</h2>
 <div class="fragment"><div class="line"><span class="comment">/* Platform-specific function that sets the output value of the RST pin. */</span></div>
 <div class="line"><span class="keywordtype">void</span> xensiv_bgt60cutrxx_platform_rst_set(<span class="keyword">const</span> <span class="keywordtype">void</span>* iface, <span class="keywordtype">bool</span> val);</div>
 <div class="line"> </div>
-<div class="line"><span class="comment">/* Platform-specific function that that sets the output value of the SPI CS pin. */</span></div>
+<div class="line"><span class="comment">/* Platform-specific function that sets the output value of the SPI CS pin. */</span></div>
 <div class="line"><span class="keywordtype">void</span> xensiv_bgt60cutrxx_platform_spi_cs_set(<span class="keyword">const</span> <span class="keywordtype">void</span>* iface, <span class="keywordtype">bool</span> val);</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">/* Platform-specific function that waits for a specified time period in milliseconds. */</span></div>
@@ -545,11 +607,12 @@ Using the library with another platform</h2>
 <div class="line"> </div>
 <div class="line"><span class="comment">/* Platform-specific function that reads 16-bit SPI data from sensor FIFO in burst mode. */</span></div>
 <div class="line">int32_t xensiv_bgt60cutrxx_platform_spi_read_block(<span class="keywordtype">void</span>* iface, <span class="keyword">const</span> uint16_t* txd, uint16_t* rxd, uint32_t len);</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md5"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md8"></a>
 Driver startup sequence</h2>
 <p>The main routine in MCU firmware initializes the required peripherals first, i.e., SPI lines and GPIO to interface with radar device.</p>
 <p>After power reset, the first command is to read SPI register from the sensor to check if the device is present. Then, the radar device is configured with the default settings to wake the device up by enabling the clock and oscillator. The default values are shown below:</p>
-<p><b>Table 1. Default radar device startup register configuration</b></p>
+<h3><a class="anchor" id="autotoc_md9"></a>
+Table 1. Default radar device startup register configuration</h3>
 <table class="markdownTable">
 <tr class="markdownTableHead">
 <th class="markdownTableHeadNone">Step   </th><th class="markdownTableHeadNone">Register name   </th><th class="markdownTableHeadNone">Address   </th><th class="markdownTableHeadNone">Value   </th><th class="markdownTableHeadNone">Details    </th></tr>
@@ -570,7 +633,7 @@ Driver startup sequence</h2>
 <div class="line">  IOLevel[&quot;Set IO Voltage Level&lt;br/&gt;Register IO_CTRL&quot;]</div>
 <div class="line">  WUC --&gt; IOLevel</div>
 </div><!-- fragment --><p>Once the SPI communication is configured, the radar device is ready and its registers can be configured. The default SPI mode for radar device is LSB first. Therefore, the register list is downloaded to the sensor. The supported code examples contain different radar configurations.</p>
-<h2><a class="anchor" id="autotoc_md6"></a>
+<h2><a class="anchor" id="autotoc_md10"></a>
 SPI communication protocol</h2>
 <p>The SPI interface is used to program the registers or read data from the radar. The SPI interface consists of:</p>
 <ul>
@@ -579,7 +642,7 @@ SPI communication protocol</h2>
 <li>MISO: data input for SPI controller</li>
 <li>MOSI: data output from SPI controller</li>
 </ul>
-<h3><a class="anchor" id="autotoc_md7"></a>
+<h3><a class="anchor" id="autotoc_md11"></a>
 SPI configuration</h3>
 <p>Due to hardware limitations, the default SPI parameters configuration for the device is:</p>
 <ul>
@@ -592,7 +655,7 @@ SPI configuration</h3>
 </li>
 <li>Baud rate: 10 MHz for device startup which is then increased to 25 MHz for high throughput</li>
 </ul>
-<h3><a class="anchor" id="autotoc_md8"></a>
+<h3><a class="anchor" id="autotoc_md12"></a>
 SPI read/write protocol</h3>
 <p>Each SPI write transfer consist of a 32-bits wide command followed by values of the same size. The command has the following fields:</p>
 <ul>
@@ -612,10 +675,12 @@ SPI read/write protocol</h3>
 </ul>
 </li>
 </ul>
-<p><b>Figure 4. SPI write protocol timing diagram</b></p>
+<h3><a class="anchor" id="autotoc_md13"></a>
+Figure 4. SPI write protocol timing diagram</h3>
 <div class="image">
 <img src="spi_protocol_lsb.png" alt=""/>
-</div>
+<div class="caption">
+SPI write protocol timing diagram</div></div>
     <p>The firmware implements a <code>set_reg()</code> function, which takes the address of the register and value to be written as parameters and constructs a packet with 4 words (one word is 16 bits wide, same as SPI bits per transfer setting) and transfers it to the radar via SPI.</p>
 <p>Inside the function, a macro is used to create the packet from given address and value as shown in the following code snippet:</p>
 <div class="fragment"><div class="line"><span class="preprocessor">#define SMARTAR_WRITE(address, value)                        \</span></div>
@@ -624,10 +689,11 @@ SPI read/write protocol</h3>
 <div class="line"><span class="preprocessor">    (value &amp; 0xFFFF), (value &gt;&gt; 16)                  \</span></div>
 <div class="line"><span class="preprocessor">}</span></div>
 </div><!-- fragment --><p>To write a register, i.e. IR Clear register, with address (0x0304) and value (0x00000630), the packet fields are filled as shown below:</p>
-<p><b>Table 2. SPI write command packet structure</b></p>
+<h3><a class="anchor" id="autotoc_md14"></a>
+Table 2. SPI write command packet structure</h3>
 <table class="markdownTable">
 <tr class="markdownTableHead">
-<th class="markdownTableHeadNone">Protocol   </th><th class="markdownTableHeadNone">WR   </th><th class="markdownTableHeadNone">NUM   </th><th class="markdownTableHeadNone">first byte of address   </th><th class="markdownTableHeadNone">Second byte of address   </th><th class="markdownTableHeadNone">Dummy/latency    </th></tr>
+<th class="markdownTableHeadNone">Protocol   </th><th class="markdownTableHeadNone">WR   </th><th class="markdownTableHeadNone">NUM   </th><th class="markdownTableHeadNone">First byte of address   </th><th class="markdownTableHeadNone">Second byte of address   </th><th class="markdownTableHeadNone">Dummy/latency    </th></tr>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">Bit number   </td><td class="markdownTableBodyNone">0   </td><td class="markdownTableBodyNone">1-7   </td><td class="markdownTableBodyNone">8-15   </td><td class="markdownTableBodyNone">16-23   </td><td class="markdownTableBodyNone">24-31    </td></tr>
 <tr class="markdownTableRowEven">
@@ -642,22 +708,27 @@ SPI read/write protocol</h3>
 <td class="markdownTableBodyNone">Binary value   </td><td class="markdownTableBodyNone">0000-1100   </td><td class="markdownTableBodyNone">0110-0000   </td><td class="markdownTableBodyNone">0000-0000   </td><td class="markdownTableBodyNone">0000-0000   </td></tr>
 </table>
 <p>A physical transmission for the above register write operation is shown below:</p>
-<p><b>Figure 5. Physical transmission for register write operation</b></p>
+<h3><a class="anchor" id="autotoc_md15"></a>
+Figure 5. Physical transmission for register write operation</h3>
 <div class="image">
 <img src="spi_write_register.png" alt=""/>
-</div>
-    <p>Similarly, the <code>get_reg()</code> function is also implemented to read a register from radar which takes register address and the pointer pointer for storing the retrieved value.</p>
-<p><b>Figure 6. Physical transmission diagram for SPI register read operation</b></p>
+<div class="caption">
+Physical transmission for register write operation</div></div>
+    <p>Similarly, the <code>get_reg()</code> function is also implemented to read a register from radar which takes register address and the pointer for storing the retrieved value.</p>
+<h3><a class="anchor" id="autotoc_md16"></a>
+Figure 6. Physical transmission diagram for SPI register read operation</h3>
 <div class="image">
 <img src="spi_read_register.png" alt=""/>
-</div>
+<div class="caption">
+Physical transmission for SPI register read operation</div></div>
     <p>The following snippet shows the packet construction for read command:</p>
 <div class="fragment"><div class="line"><span class="preprocessor">#define SMARTAR_READ(address)                   \</span></div>
 <div class="line"><span class="preprocessor">{                                           \</span></div>
 <div class="line"><span class="preprocessor">    ((address &amp; 0xFF) &lt;&lt; 8), (address &gt;&gt; 8) \</span></div>
 <div class="line"><span class="preprocessor">}</span></div>
 </div><!-- fragment --><p>To read a register, i.e., Hardware ID register with address (0x0E08), the packet fields are filled as shown below:</p>
-<p><b>Table 3. SPI write command packet structure</b></p>
+<h3><a class="anchor" id="autotoc_md17"></a>
+Table 3. SPI read command packet structure</h3>
 <table class="markdownTable">
 <tr class="markdownTableHead">
 <th class="markdownTableHeadNone">Protocol   </th><th class="markdownTableHeadNone">WR   </th><th class="markdownTableHeadNone">NUM   </th><th class="markdownTableHeadNone">First byte of address   </th><th class="markdownTableHeadNone">Second byte of address   </th><th class="markdownTableHeadNone">Dummy/latency    </th></tr>
@@ -675,37 +746,283 @@ SPI read/write protocol</h3>
 <td class="markdownTableBodyNone">Binary value   </td><td class="markdownTableBodyNone">0000-0001   </td><td class="markdownTableBodyNone">0000-0001   </td><td class="markdownTableBodyNone">0001-0000   </td><td class="markdownTableBodyNone">0000-0000   </td></tr>
 </table>
 <p>The following figure shows bus communication for this packet:</p>
-<p><b>Figure 7. Physical transmission for SPI register read packet</b></p>
+<h3><a class="anchor" id="autotoc_md18"></a>
+Figure 7. Physical transmission for SPI register read packet</h3>
 <div class="image">
 <img src="spi_read_register_la.png" alt=""/>
-</div>
+<div class="caption">
+Physical transmission for SPI register read packet</div></div>
     <p>To read a memory chunk from the radar, use the NUM field of SPI command. When set to 0, the radar increments the memory address for the next transfer.</p>
 <p>To continue reading data, call the low level spi function <code>spi_read()</code> and after the expected number of words have been read, deactivate the CSN line.</p>
-<p><b>Figure 8. Timing diagram for continuous SPI memory read operation</b></p>
+<h3><a class="anchor" id="autotoc_md19"></a>
+Figure 8. Timing diagram for continuous SPI memory read operation</h3>
 <div class="image">
 <img src="spi_bulk.png" alt=""/>
-</div>
-    <p><br  />
-</p>
-<h1><a class="anchor" id="autotoc_md9"></a>
-BGT60CUTRXX processing functions</h1>
+<div class="caption">
+Continuous SPI memory read operation</div></div>
+    <h1><a class="anchor" id="autotoc_md20"></a>
+BGT60CUTRxx processing functions</h1>
 <p>The data processing part is divided into smaller independent blocks that can be used individually or together based on the application. The details of these modules can be found in the <em>Radar On-chip feature document</em>.</p>
-<h2><a class="anchor" id="autotoc_md10"></a>
+<h2><a class="anchor" id="autotoc_md21"></a>
 Motion detection</h2>
-<p>This contains the implementation to read the motion detection registers of the sensor and decode their values. It can detect up to 8 targets and give the range, velocity, angle, azimuth, and elevation of each target. The output of motion detection is also used for clustering and clutter localization.</p>
-<h2><a class="anchor" id="autotoc_md11"></a>
+<p>This contains the implementation to read the motion detection registers of the sensor and decode their values. It can detect up to 8 targets and give the range, azimuth, elevation, velocity and magnitude. The output of motion detection is also used for clustering and clutter localization.</p>
+<h3><a class="anchor" id="autotoc_md22"></a>
+Motion detection output</h3>
+<p>After each motion detection event, up to <code>BGT60CUTR13_PROCESSED_MD_TARGET_MAX</code> detected targets are available in the <code>motion_detection_t.processed_targets</code> array. Each entry is of type <code>motion_detection_processed_targets_t</code> and contains the following fields:</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Field   </th><th class="markdownTableHeadNone">Type   </th><th class="markdownTableHeadNone">Description    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>range_m</code>   </td><td class="markdownTableBodyNone"><code>float</code>   </td><td class="markdownTableBodyNone">Range of the detected target in meters    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>azimuth_deg</code>   </td><td class="markdownTableBodyNone"><code>float</code>   </td><td class="markdownTableBodyNone">Azimuth angle of the detected target in degrees    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>elevation_deg</code>   </td><td class="markdownTableBodyNone"><code>float</code>   </td><td class="markdownTableBodyNone">Elevation angle of the detected target in degrees    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>magnitude_dBFS</code>   </td><td class="markdownTableBodyNone"><code>float</code>   </td><td class="markdownTableBodyNone">Signal magnitude of the detected target in dBFS    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>velocity_mps</code>   </td><td class="markdownTableBodyNone"><code>float</code>   </td><td class="markdownTableBodyNone">Radial velocity of the detected target in meters per second    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>antenna_rx</code>   </td><td class="markdownTableBodyNone"><code>uint8_t</code>   </td><td class="markdownTableBodyNone">Receive antenna index which detected highest magnitude   </td></tr>
+</table>
+<p>The number of valid entries is indicated by <code>motion_detection_t.number_of_detected_targets</code>. Targets are ordered by range, from closest to farthest.</p>
+<p>The following flags in <code>motion_detection_t</code> indicate which acquisition sequence has completed:</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Flag   </th><th class="markdownTableHeadNone">Type   </th><th class="markdownTableHeadNone">Description    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>seq1_done</code>   </td><td class="markdownTableBodyNone"><code>bool</code>   </td><td class="markdownTableBodyNone">Set when sequence 1 completion event occurred    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>rd_event</code>   </td><td class="markdownTableBodyNone"><code>bool</code>   </td><td class="markdownTableBodyNone">Set when an RD (Range-Doppler) motion detection event occurred    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>ulp_event</code>   </td><td class="markdownTableBodyNone"><code>bool</code>   </td><td class="markdownTableBodyNone">Set when a ULP (Ultra Low Power) motion detection event occurred    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>seq2_done</code>   </td><td class="markdownTableBodyNone"><code>bool</code>   </td><td class="markdownTableBodyNone">Set when sequence 2 completion event occurred   </td></tr>
+</table>
+<p><b>Notes on angle estimation:</b></p>
+<ul>
+<li>In order to obtain precise results for azimuth and elevation, the actual calibration matrix corresponding to the HW being used must be inserted to the register list downloaded to sensor.</li>
+<li>Sensor maximum unambiguous angular range: ±78.8 degrees.</li>
+</ul>
+<h2><a class="anchor" id="autotoc_md23"></a>
 Clustering</h2>
-<p>Clustering module uses the ULP events from motion detection targets to detect the number of clusters. In the beginning, this creates a history buffer and once the sufficient events are available, the algorithm runs on that.</p>
-<h2><a class="anchor" id="autotoc_md12"></a>
+<p>Clustering module is intended for grouping and maintaining detections of static targets in clusters, by identifying locations of targets over time.</p>
+<p>Its algorithm uses range, azimuth and elevation information from the ULP motion detection events. The ULP acquisition sequence shall be optimized for static presence detection, accordingly. A history buffer is used to track targets beyond the minimum range threshold. Once the sufficient events are available, the targets are processed.</p>
+<h3><a class="anchor" id="autotoc_md24"></a>
+Clustering output</h3>
+<p>The results of the clustering algorithm are stored in the <code>clustering_t</code> structure. After calling <code>clustering_process()</code>, the following fields contain the output:</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Field   </th><th class="markdownTableHeadNone">Type   </th><th class="markdownTableHeadNone">Description    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>num_clusters</code>   </td><td class="markdownTableBodyNone"><code>int32_t</code>   </td><td class="markdownTableBodyNone">Number of clusters found in the most recent clustering operation    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>centroids</code>   </td><td class="markdownTableBodyNone"><code>point_polar_t[CLUSTERING_MAX_CENTROIDS]</code>   </td><td class="markdownTableBodyNone">Array of cluster centroids; each centroid provides <code>range_m</code>, <code>azimuth_deg</code>, <code>elevation_deg</code>, and <code>magnitude_dBFS</code>   </td></tr>
+</table>
+<p>Only the first <code>num_clusters</code> entries in the <code>centroids</code> array are valid. The centroid coordinates represent the average position of all detection points assigned to that cluster.</p>
+<h3><a class="anchor" id="autotoc_md25"></a>
+Clustering configuration</h3>
+<p>The clustering algorithm is configured via a <code>clustering_settings_t</code> structure passed to <code>clustering_init()</code>:</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Field   </th><th class="markdownTableHeadNone">Type   </th><th class="markdownTableHeadNone">Description    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>max_rows</code>   </td><td class="markdownTableBodyNone"><code>int32_t</code>   </td><td class="markdownTableBodyNone">Maximum history size in number of frames; must not exceed <code>CLUSTERING_MAX_HISTORY_ROWS</code> (25)    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>min_range_m</code>   </td><td class="markdownTableBodyNone"><code>float</code>   </td><td class="markdownTableBodyNone">Minimum detection range in meters; targets closer than this value are discarded    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>static_check_frame_count</code>   </td><td class="markdownTableBodyNone"><code>int32_t</code>   </td><td class="markdownTableBodyNone">Minimum number of frames required in the history buffer before clustering is performed    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>cluster_clear_counter_threshold</code>   </td><td class="markdownTableBodyNone"><code>int32_t</code>   </td><td class="markdownTableBodyNone">Number of consecutive clustering cycles without detections before the cluster history is cleared    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>dbscan_eps_m</code>   </td><td class="markdownTableBodyNone"><code>float</code>   </td><td class="markdownTableBodyNone">DBSCAN epsilon: maximum distance in meters between two points for them to be considered neighbors    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>dbscan_min_samples</code>   </td><td class="markdownTableBodyNone"><code>int32_t</code>   </td><td class="markdownTableBodyNone">DBSCAN min_samples: minimum number of points required to form a core point   </td></tr>
+</table>
+<h2><a class="anchor" id="autotoc_md26"></a>
+Convergence</h2>
+<p>The convergence module fuses Range-Doppler (RD) motion detection results with Ultra-Low-Power (ULP) clustering results into a single, temporally persistent output. It prevents flickering by holding detections for a configurable persistence duration after the last event.</p>
+<p>The module is called once per radar interrupt, after <code>radar_motion_detection_process()</code> and <code>clustering_process()</code> have completed. It maintains persistent copies of both RD detections and ULP centroids, clearing them only after prolonged absence of new detections.</p>
+<p>ULP reporting is enabled by the presence of RD detections. This helps distinguish between persistent objects of interest (e.g. humans) and transient clutter that may only appear in the ULP sequence.</p>
+<h3><a class="anchor" id="autotoc_md27"></a>
+Convergence output</h3>
+<p>After calling <code>convergence_process()</code>, the following fields in the <code>convergence_t</code> structure contain the output:</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Field   </th><th class="markdownTableHeadNone">Type   </th><th class="markdownTableHeadNone">Description    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>num_rd_detections</code>   </td><td class="markdownTableBodyNone"><code>uint16_t</code>   </td><td class="markdownTableBodyNone">Number of persistent RD detections    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>rd_detections</code>   </td><td class="markdownTableBodyNone"><code>motion_detection_processed_targets_t[BGT60CUTR13_PROCESSED_MD_TARGET_MAX]</code>   </td><td class="markdownTableBodyNone">Array of persistent RD detections    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>num_ulp_centroids</code>   </td><td class="markdownTableBodyNone"><code>int32_t</code>   </td><td class="markdownTableBodyNone">Number of persistent ULP cluster centroids    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>ulp_centroids</code>   </td><td class="markdownTableBodyNone"><code>point_polar_t[CLUSTERING_MAX_CENTROIDS]</code>   </td><td class="markdownTableBodyNone">Array of persistent ULP cluster centroids    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>results_updated</code>   </td><td class="markdownTableBodyNone"><code>bool</code>   </td><td class="markdownTableBodyNone">True when <code>num_rd_detections</code> or <code>num_ulp_centroids</code> changed during the last <code>convergence_process()</code> call   </td></tr>
+</table>
+<h3><a class="anchor" id="autotoc_md28"></a>
+Convergence configuration</h3>
+<p>The convergence module is configured via a <code>convergence_settings_t</code> structure passed to <code>convergence_init()</code>:</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Field   </th><th class="markdownTableHeadNone">Type   </th><th class="markdownTableHeadNone">Description    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>rd_fps</code>   </td><td class="markdownTableBodyNone"><code>uint32_t</code>   </td><td class="markdownTableBodyNone">RD sequence frame rate (frames per second)    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>ulp_fps</code>   </td><td class="markdownTableBodyNone"><code>uint32_t</code>   </td><td class="markdownTableBodyNone">ULP sequence frame rate (frames per second)    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>rd_persistence_s</code>   </td><td class="markdownTableBodyNone"><code>uint32_t</code>   </td><td class="markdownTableBodyNone">Duration (seconds) to hold RD results after last detection    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>ulp_persistence_s</code>   </td><td class="markdownTableBodyNone"><code>uint32_t</code>   </td><td class="markdownTableBodyNone">Duration (seconds) to hold ULP results after last detection    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>ulp_reporting_s</code>   </td><td class="markdownTableBodyNone"><code>uint32_t</code>   </td><td class="markdownTableBodyNone">Duration (seconds) to report new ULP results after last RD detection; must be ≥ <code>ulp_persistence_s</code>   </td></tr>
+</table>
+<h2><a class="anchor" id="autotoc_md29"></a>
 Clutter localization and masking</h2>
-<p>This module also uses the motion detection data to check for the clutter presence. If the masking is enabled, the detected clutter is masked and not shown in subsequent events.</p>
-<h1><a class="anchor" id="autotoc_md13"></a>
-BGT60CUTRXX frame acquisition</h1>
-<p>This contains the application function to help read the frame data from radar internal FIFO buffer.</p>
-<h1><a class="anchor" id="autotoc_md14"></a>
+<p>This module is intended for rejecting false detections, such as those caused by persistent motion from non-human sources like spinning fans.</p>
+<p>Its algorithm uses information from the RD motion detection events and monitors the scene for persistent motion beyond a certain doppler speed. After a certain threshold is reached, the hardware registers are programmed to mask out the affected zone. Once masking is enabled, the clutter is removed from the target lists of subsequent events.</p>
+<p>The resulting zone masking applies to both ULP and RD events in the same way.</p>
+<h3><a class="anchor" id="autotoc_md30"></a>
+Clutter localization configuration</h3>
+<p>The clutter localization module is configured through a <code>clutter_localization_config_t</code> structure passed to <code>clutter_localization_init()</code>:</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Field   </th><th class="markdownTableHeadNone">Type   </th><th class="markdownTableHeadNone">Description    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>doppler_gating_speed_mps</code>   </td><td class="markdownTableBodyNone"><code>float</code>   </td><td class="markdownTableBodyNone">Minimum Doppler speed in m/s; only targets moving faster than this threshold are considered potential clutter    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>increment_count</code>   </td><td class="markdownTableBodyNone"><code>uint8_t</code>   </td><td class="markdownTableBodyNone">Amount by which the per-zone detection counter is incremented on each detection event    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>decrement_count</code>   </td><td class="markdownTableBodyNone"><code>uint8_t</code>   </td><td class="markdownTableBodyNone">Amount by which the per-zone detection counter is decremented when no detection occurs    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>saturation_limit</code>   </td><td class="markdownTableBodyNone"><code>uint8_t</code>   </td><td class="markdownTableBodyNone">Maximum value of the per-zone detection counter (saturation cap)    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>settings_threshold</code>   </td><td class="markdownTableBodyNone"><code>uint8_t</code>   </td><td class="markdownTableBodyNone">Counter value at which a zone is flagged as containing clutter and masking is applied    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>priority_h_plane</code>   </td><td class="markdownTableBodyNone"><code>uint8_t</code>   </td><td class="markdownTableBodyNone">If set to 1, the horizontal plane has priority over the elevation plane when updating zone exclusion registers    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>num_neighboring_zones</code>   </td><td class="markdownTableBodyNone"><code>uint8_t</code>   </td><td class="markdownTableBodyNone">Number of neighboring zones to mask in addition to the detected clutter zone    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>period_ticks</code>   </td><td class="markdownTableBodyNone"><code>uint16_t</code>   </td><td class="markdownTableBodyNone">Period in RD sequence interrupts at which clutter masking is periodically restarted    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>max_duration_ticks</code>   </td><td class="markdownTableBodyNone"><code>uint16_t</code>   </td><td class="markdownTableBodyNone">Maximum duration in RD sequence interrupts for which clutter masking remains active    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>auto_masking_active</code>   </td><td class="markdownTableBodyNone"><code>bool</code>   </td><td class="markdownTableBodyNone">Enables or disables automatic zone masking triggered by presence detection    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>deactivation_counter_threshold_ticks</code>   </td><td class="markdownTableBodyNone"><code>uint16_t</code>   </td><td class="markdownTableBodyNone">Number of consecutive RD events without a detected target after which clutter detection is deactivated    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>range_max</code>   </td><td class="markdownTableBodyNone"><code>float</code>   </td><td class="markdownTableBodyNone">Maximum range in meters considered for clutter zone mapping   </td></tr>
+</table>
+<h1><a class="anchor" id="autotoc_md31"></a>
+BGT60CUTRxx frame acquisition</h1>
+<p>This contains the application function to help read the frame data from radar internal FIFO buffer. </p>
+<h1><a class="anchor" id="autotoc_md32"></a>
+Linux kernel driver</h1>
+<p>A Linux kernel driver for the BGT60CUTRxx sensor is provided in the <code>platform/linux-kernel/</code> folder. It targets Raspberry Pi and similar SBCs and exposes the sensor via a standard Linux SPI character device. The kernel module includes a fixed-point implementation of the full algorithm chain (motion detection, clustering, clutter localization, and convergence) so that the driver can run without floating-point hardware. A device tree overlay, build instructions, and Python utility scripts for reading targets and streaming data over a WebSocket are also included.</p>
+<p>For detailed build and usage instructions, see <code>platform/linux-kernel/README.md</code> (available on request, not part of the release).</p>
+<h1><a class="anchor" id="autotoc_md33"></a>
+Calibration matrix update</h1>
+<p>Imperfections from the transmitter (TX) to receiver (RX) path on antenna side, especially for antenna in package, have a non-negligible impact on the phase information. Furthermore, reflections coming from very short distances like housings or covers of the radar sensor have an influence on the phase. To compensate such impacts, it is inevitable to apply a calibration matrix prior to the angle calculation. The calibration parameters are specific to the hardware and are provided by Infineon.</p>
+<p>Two calibration matrices are available, typically one for H-Plane (<b>MD_CAL_MAT_H</b>)and one for E-Plane (<b>MD_CAL_MAT_E</b>) with one complex value for each element in the format Q0.15 (1 sign bit, 0 integer bit, 15 fractional bits). The dimensions of each matrix is 2 x 3, representing one dimension for the calibrated signals A, B and one dimension for the receiving antennas 𝑅𝑋1 to 𝑅𝑋3, respectively. Calibration coefficients inside the matrix can be adjusted to choose the desired two receiver channels for Angle Calculation.</p>
+<p>The calibration for H-Plane is defined as:</p>
+<p class="formulaDsp">
+\[\begin{bmatrix} A \\ B \end{bmatrix} = \begin{bmatrix} H_{11} &amp; H_{12} &amp; H_{13} \\ H_{21} &amp; H_{22} &amp; H_{23} \end{bmatrix} \cdot \begin{bmatrix} RX_1 \\ RX_2 \\ RX_3 \end{bmatrix}\]
+</p>
+<p>The calibration for E-Plane is defined as: </p><p class="formulaDsp">
+\[\begin{bmatrix} A \\ B \end{bmatrix} = \begin{bmatrix} E_{11} &amp; E_{12} &amp; E_{13} \\ E_{31} &amp; E_{32} &amp; E_{33} \end{bmatrix} \cdot \begin{bmatrix} RX_1 \\ RX_2 \\ RX_3 \end{bmatrix}\]
+</p>
+<p>MTB release comes with default calibration matrix for plain pcb CSK wing board kit. Users can place this hardware kit in a Radom or even can develop a custom board, which requires a new calibration matrix to be updated, to get an accurate angle estimation. The calibration matrix is computed from antenna in chamber, please contact Infineon support for more details. Calibration matrix new values can be updated in the following register addresses for calibration matrix in radar configuration C header file.</p>
+<p>H_Plane calibration matrix register addresses:</p>
+<ul>
+<li><code>MD_CAL_MAT_H_11</code> (0x1e00)</li>
+<li><code>MD_CAL_MAT_H_12</code> (0x1e04)</li>
+<li><code>MD_CAL_MAT_H_13</code> (0x1e08)</li>
+<li><code>MD_CAL_MAT_H_21</code> (0x1e10)</li>
+<li><code>MD_CAL_MAT_H_22</code> (0x1e14)</li>
+<li><code>MD_CAL_MAT_H_23</code> (0x1e18)</li>
+</ul>
+<p>E_Plane calibration matrix register addresses:</p>
+<ul>
+<li><code>MD_CAL_MAT_E_11</code> (0x1e40)</li>
+<li><code>MD_CAL_MAT_E_12</code> (0x1e44)</li>
+<li><code>MD_CAL_MAT_E_13</code> (0x1e48)</li>
+<li><code>MD_CAL_MAT_E_31</code> (0x1e60)</li>
+<li><code>MD_CAL_MAT_E_32</code> (0x1e64)</li>
+<li><code>MD_CAL_MAT_E_33</code> (0x1e68)</li>
+</ul>
+<p>In order to generate the calibration matrix in this fixed point format, following matlab script can be used, which expects a .mat file for E and H plane.</p>
+<div class="fragment"><div class="line">% =========================================================================</div>
+<div class="line">% Smartar Calibration Register Generation</div>
+<div class="line">% -------------------------------------------------------------------------</div>
+<div class="line">% Generates Q0.15 fixed-point calibration register values for the H-plane</div>
+<div class="line">% and E-plane antenna configurations.</div>
+<div class="line">%</div>
+<div class="line">% Output format: Q0.15 (signed 16-bit, 15 fractional bits) hexadecimal</div>
+<div class="line">% =========================================================================</div>
+<div class="line"> </div>
+<div class="line">% --- Configuration -------------------------------------------------------</div>
+<div class="line">% Base directory containing the calibration .mat files</div>
+<div class="line">cal_data_dir = &quot;.\calibration\&quot;;</div>
+<div class="line"> </div>
+<div class="line">% Calibration file names</div>
+<div class="line">h_plane_file = &quot;Hplane.mat&quot;;</div>
+<div class="line">e_plane_file = &quot;Eplane.mat&quot;;</div>
+<div class="line"> </div>
+<div class="line">% Q0.15 fixed-point format parameters</div>
+<div class="line">FI_SIGNED        = 1;   % Signed representation</div>
+<div class="line">FI_WORD_LENGTH   = 16;  % Total bits</div>
+<div class="line">FI_FRAC_LENGTH   = 15;  % Fractional bits (Q0.15)</div>
+<div class="line"> </div>
+<div class="line">% =========================================================================</div>
+<div class="line">% H-plane calibration (2 RX channels: indices 1 and 2)</div>
+<div class="line">% =========================================================================</div>
+<div class="line">load(fullfile(cal_data_dir, h_plane_file));</div>
+<div class="line"> </div>
+<div class="line">% Transpose required or not depends on how the calib matrix is stored in mat file</div>
+<div class="line">h_cal_raw = mc_cal&#39;;</div>
+<div class="line"> </div>
+<div class="line">% Normalise by the number of snapshots (rows of the original matrix)</div>
+<div class="line">num_snapshots_h = size(mc_cal, 1);</div>
+<div class="line">h_cal_normalised = h_cal_raw ./ num_snapshots_h;</div>
+<div class="line"> </div>
+<div class="line">% Select the two active RX channels</div>
+<div class="line">h_cal_rx_selected = h_cal_normalised(1:2, :);</div>
+<div class="line"> </div>
+<div class="line">% Convert to Q0.15 fixed-point</div>
+<div class="line">h_cal_q015 = fi(h_cal_rx_selected, FI_SIGNED, FI_WORD_LENGTH, FI_FRAC_LENGTH);</div>
+<div class="line"> </div>
+<div class="line">% Display H-plane register values in hex</div>
+<div class="line">disp(&#39;H-plane calibration register values (Q0.15 hex):&#39;)</div>
+<div class="line">disp(h_cal_q015.hex)</div>
+<div class="line">disp(&#39;-----&#39;)</div>
+<div class="line"> </div>
+<div class="line">% =========================================================================</div>
+<div class="line">% E-plane calibration (3 RX channels: indices 1, 3)</div>
+<div class="line">% =========================================================================</div>
+<div class="line">load(fullfile(cal_data_dir, e_plane_file));</div>
+<div class="line"> </div>
+<div class="line">% Transpose required or not depends on how the calib matrix is stored in mat file</div>
+<div class="line">e_cal_raw = mc_cal&#39;;</div>
+<div class="line"> </div>
+<div class="line">% Normalise by the number of snapshots (rows of the original matrix)</div>
+<div class="line">num_snapshots_e = size(mc_cal, 1);</div>
+<div class="line">e_cal_normalised = e_cal_raw ./ num_snapshots_e;</div>
+<div class="line"> </div>
+<div class="line">% Select the active RX channels (every other channel: 1 and 3)</div>
+<div class="line">e_cal_rx_selected = e_cal_normalised(1:2:3, :);</div>
+<div class="line"> </div>
+<div class="line">% Convert to Q0.15 fixed-point</div>
+<div class="line">e_cal_q015 = fi(e_cal_rx_selected, FI_SIGNED, FI_WORD_LENGTH, FI_FRAC_LENGTH);</div>
+<div class="line"> </div>
+<div class="line">% Display E-plane register values in hex</div>
+<div class="line">disp(&#39;E-plane calibration register values (Q0.15 hex):&#39;)</div>
+<div class="line">disp(e_cal_q015.hex)</div>
+<div class="line">disp(&#39;-----&#39;)</div>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md34"></a>
 More information</h1>
 <ul>
-<li><a href="https://github.com/Infineon/sensor-xensiv-bgt60cutrxx/docs/api_reference_manual.html">API reference guide</a></li>
+<li><a href="https://github.com/Infineon/sensor-xensiv-bgt60cutrxx/blob/master/docs/api_reference_manual.html">API reference guide</a></li>
 <li><a href="https://www.infineon.com">Infineon Technologies</a></li>
 <li><a href="https://github.com/infineon">Infineon GitHub</a></li>
 <li><a href="https://github.com/infineon/Code-Examples-for-ModusToolbox-Software">PSoC&trade; 6 code examples using ModusToolbox&trade;</a></li>
@@ -717,7 +1034,7 @@ More information</h1>
 <p>The Bluetooth&reg; word mark and logos are registered trademarks owned by Bluetooth SIG, Inc., and any use of such marks by Infineon is under license.</p>
 <p>PSOC&trade;, formerly known as PSoC&trade;, is a trademark of Infineon Technologies. Any references to PSoC&trade; in this document or others shall be deemed to refer to PSOC&trade;.</p>
 <hr  />
-<p>(c) 2025, Infineon Technologies AG, or an affiliate of Infineon Technologies AG. All rights reserved. This software, associated documentation and materials ("Software") is owned by Infineon Technologies AG or one of its affiliates ("Infineon") and is protected by and subject to worldwide patent protection, worldwide copyright laws, and international treaty provisions. Therefore, you may use this Software only as provided in the license agreement accompanying the software package from which you obtained this Software. If no license agreement applies, then any use, reproduction, modification, translation, or compilation of this Software is prohibited without the express written permission of Infineon. <br  />
+<p>(c) 2026, Infineon Technologies AG, or an affiliate of Infineon Technologies AG. All rights reserved. This software, associated documentation and materials ("Software") is owned by Infineon Technologies AG or one of its affiliates ("Infineon") and is protected by and subject to worldwide patent protection, worldwide copyright laws, and international treaty provisions. Therefore, you may use this Software only as provided in the license agreement accompanying the software package from which you obtained this Software. If no license agreement applies, then any use, reproduction, modification, translation, or compilation of this Software is prohibited without the express written permission of Infineon. <br  />
  Disclaimer: UNLESS OTHERWISE EXPRESSLY AGREED WITH INFINEON, THIS SOFTWARE IS PROVIDED AS-IS, WITH NO WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, ALL WARRANTIES OF NON-INFRINGEMENT OF THIRD-PARTY RIGHTS AND IMPLIED WARRANTIES SUCH AS WARRANTIES OF FITNESS FOR A SPECIFIC USE/PURPOSE OR MERCHANTABILITY. Infineon reserves the right to make changes to the Software without notice. You are responsible for properly designing, programming, and testing the functionality and safety of your intended application of the Software, as well as complying with any legal requirements related to its use. Infineon does not guarantee that the Software will be free from intrusion, data theft or loss, or other breaches (“Security Breaches”), and Infineon shall have no liability arising out of any Security Breaches. Unless otherwise explicitly approved by Infineon, the Software may not be used in any application where a failure of the Product or any consequences of the use thereof can reasonably be expected to result in personal injury. </p>
 </div></div><!-- PageDoc -->
 <a href="doxygen_crawl.html"></a>

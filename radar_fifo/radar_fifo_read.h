@@ -1,8 +1,8 @@
 /**
  * @file radar_fifo_read.h
- * @brief Header file for the XENSIV(TM) BGT60CUTRXX radar FIFO interface.
+ * @brief Header file for the XENSIV(TM) BGT60CUTRxx radar FIFO interface.
  *
- * This file provides functionality related to the XENSIV(TM) BGT60CUTRXX sensor,
+ * This file provides functionality related to the XENSIV(TM) BGT60CUTRxx sensor,
  * related to FIFO data retrieval.
  *
  ********************************************************************************
@@ -35,15 +35,15 @@
  */
 
 /**
- * @brief Retrieves FIFO event status from the XENSIV(TM) BGT60CUTRXX sensor.
+ * @brief Retrieves FIFO event status from the XENSIV(TM) BGT60CUTRxx sensor.
  *
- * This function checks the interrupt status register of the XENSIV(TM) BGT60CUTRXX sensor
+ * This function checks the interrupt status register of the XENSIV(TM) BGT60CUTRxx sensor
  * to determine if any FIFO-related events have occurred, such as threshold exceeded,
  * underflow, or overflow.
  *
  * In case of underflow or overflow event, the corresponding event flag is cleared.
  *
- * @param dev Pointer to the XENSIV BGT60CUTRXX device structure.
+ * @param dev Pointer to the XENSIV BGT60CUTRxx device structure.
  * @param event Pointer to a variable where the FIFO event status will be stored.
  *
  * @return status code, XENSIV_BGT60CUTRXX_STATUS_OK on success.
@@ -65,15 +65,15 @@ int32_t xensiv_bgt60cutrxx_get_fifo_event(xensiv_bgt60cutrxx_t* dev, xensiv_bgt6
 int32_t xensiv_bgt60cutrxx_get_fifo_level(xensiv_bgt60cutrxx_t* dev, uint32_t* num_samples_available);
 
 /**
- * @brief Reads radar samples from the FIFO of the XENSIV(TM) BGT60CUTRXX sensor.
+ * @brief Reads radar samples from the FIFO of the XENSIV(TM) BGT60CUTRxx sensor.
  *
- * This function retrieves radar samples stored in the FIFO of the XENSIV(TM) BGT60CUTRXX sensor
+ * This function retrieves radar samples stored in the FIFO of the XENSIV(TM) BGT60CUTRxx sensor
  * into the provided frame buffer. Afterwards, it clears the FIFO threshold event flag.
  *
  * @note The caller must ensure the frame buffer has enough space to hold the requested number of radar samples.
  * @note The function assumes data production is active and the device is in the expected sequence state.
  *
- * @param dev Pointer to the XENSIV BGT60CUTRXX device structure.
+ * @param dev Pointer to the XENSIV BGT60CUTRxx device structure.
  * @param frame_buffer pointer to the frame buffer.
  * @param num_samples number of radar samples to read from FIFO.
  *

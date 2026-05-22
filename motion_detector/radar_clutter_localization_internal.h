@@ -37,7 +37,7 @@
  * @param zone_marker Zone marker array for the current detection
  * @param range Range index of the detection
  * @param angle Angle index of the detection
- * @return true if clutter has been detected, false if no clutter has been detected
+ * @return true if clutter detected, false if no clutter detected
  */
 bool clutter_localization_update_registers(clutter_localization_t* clutter, zone_marker_array_t zone_marker,
                                            int8_t range, int8_t angle);
@@ -50,7 +50,7 @@ bool clutter_localization_update_registers(clutter_localization_t* clutter, zone
  * @param range Range index of the detection
  * @param angle Angle index of the detection
  *
- * @return true if clutter has been detected, false if no clutter has been detected
+ * @return true if clutter detected, false if no clutter detected
  */
 bool clutter_localization_update_markers_value(clutter_localization_t* clutter, zone_marker_array_t zone_marker,
                                                zone_marker_array_t temp_zone_marker, int8_t range, int8_t angle);
@@ -60,7 +60,7 @@ bool clutter_localization_update_markers_value(clutter_localization_t* clutter, 
  * @param clutter Pointer to the clutter localization instance
  * @param temp_zone_marker_e Temporary zone marker array for the elevation plane
  * @param temp_zone_marker_h Temporary zone marker array for the horizontal plane
- * @return true if clutter has been detected, false if no clutter has been detected
+ * @return true if clutter detected, false if no clutter detected
  */
 bool clutter_localization_update_markers(clutter_localization_t* clutter, zone_marker_array_t temp_zone_marker_e,
                                          zone_marker_array_t temp_zone_marker_h);
@@ -73,7 +73,8 @@ bool clutter_localization_update_markers(clutter_localization_t* clutter, zone_m
  * @return 0 on success, negative error code on failure
  */
 int32_t clutter_localization_set_neighboring_zones(clutter_localization_t* clutter, zone_marker_array_t zone_marker,
-                                                   zone_marker_array_t zone_marker_neighboring);
+                                                   zone_marker_array_t zone_marker_neighboring,
+                                                   zone_marker_array_t zone_marker_neighboring_history);
 
 /** Map zones to registers
  * This function maps the clutter localization zones to the corresponding radar sensor registers.
@@ -81,4 +82,5 @@ int32_t clutter_localization_set_neighboring_zones(clutter_localization_t* clutt
  * @return 0 on success, negative error code on failure
  */
 int32_t clutter_localization_map_zones_to_registers(clutter_localization_t* clutter);
+
 #endif // RADAR_CLUTTER_LOCALIZATION_INTERNAL_H

@@ -1,9 +1,14 @@
 var searchData=
 [
-  ['h_20tt_0',['File: &lt;tt&gt;xensiv_bgt60cutrxx_platform_arduino.h&lt;/tt&gt;',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md63',1,'']]],
-  ['hal_1',['3.2 Platform-Dependent Layer (HAL)',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md42',1,'']]],
-  ['hardware_20connections_2',['Essential Hardware Connections',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md28',1,'']]],
-  ['hardware_20interface_20specifications_3',['4. Hardware Interface Specifications',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md45',1,'']]],
-  ['hardware_20requirements_4',['2.1 Hardware Requirements',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md27',1,'']]],
-  ['hardware_20setup_5',['6.1 Hardware Setup',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md60',1,'']]]
+  ['id_20verification_0',['Device ID verification',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md92',1,'']]],
+  ['ide_20setup_1',['Arduino IDE setup',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md85',1,'']]],
+  ['implementation_2',['Platform abstraction layer implementation',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md70',1,'']]],
+  ['implementation_20files_3',['Platform implementation files',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#platform-implementation-files',1,'']]],
+  ['independent_20layer_4',['Platform-independent layer',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md56',1,'']]],
+  ['information_5',['More information',['../index.html#autotoc_md34',1,'']]],
+  ['ino_20tt_6',['File: &lt;tt&gt;radar_motion_detection.ino&lt;/tt&gt;',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md82',1,'']]],
+  ['instructions_7',['Build and run instructions',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md84',1,'']]],
+  ['interface_20specifications_8',['Hardware interface specifications',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md63',1,'']]],
+  ['introduction_9',['Introduction',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md39',1,'']]],
+  ['issues_20and_20solutions_10',['Common issues and solutions',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md96',1,'']]]
 ];

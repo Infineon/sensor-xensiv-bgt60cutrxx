@@ -1,9 +1,9 @@
 /**
  * @file xensiv_bgt60cutrxx_platform.h
- * @brief Header file for the XENSIV(TM) BGT60CUTRXX module.
+ * @brief Header file for the XENSIV(TM) BGT60CUTRxx module.
  *
- * This file contains the declarations and definitions for the XENSIV(TM) BGT60CUTRXX module.
- * The module provides functionality related to the XENSIV(TM) BGT60CUTRXX sensor, including
+ * This file contains the declarations and definitions for the XENSIV(TM) BGT60CUTRxx module.
+ * The module provides functionality related to the XENSIV(TM) BGT60CUTRxx sensor, including
  * initialization, configuration, and data retrieval.
  *
  ********************************************************************************
@@ -57,7 +57,7 @@
 /**
  * @brief Delays the execution for the specified number of milliseconds.
  *
- * This function provides a platform-specific delay implementation for the XENSIV(TM) BGT60CUTRXX sensor.
+ * This function provides a platform-specific delay implementation for the XENSIV(TM) BGT60CUTRxx sensor.
  *
  * @param ms The number of milliseconds to delay.
  */
@@ -66,7 +66,7 @@ void xensiv_bgt60cutrxx_platform_delay(uint32_t ms);
 /**
  * @brief Delays the execution for the specified number of microseconds.
  *
- * This function provides a platform-specific delay implementation for the XENSIV(TM) BGT60CUTRXX sensor.
+ * This function provides a platform-specific delay implementation for the XENSIV(TM) BGT60CUTRxx sensor.
  *
  * @param us The number of microseconds to delay.
  */
@@ -75,9 +75,9 @@ void xensiv_bgt60cutrxx_platform_delay_us(uint32_t us);
 /**
  * @brief Sets the reset pin for the xensiv_bgt60cutrxx to given value.
  *
- * This function is used to set the reset pin for the XENSIV(TM) BGT60CUTRXX sensor.
+ * This function is used to set the reset pin for the XENSIV(TM) BGT60CUTRxx sensor.
  *
- * @param iface Pointer to the interface structure for the XENSIV(TM) BGT60CUTRXX sensor.
+ * @param iface Pointer to the interface structure for the XENSIV(TM) BGT60CUTRxx sensor.
  * @param val The value to set for the reset pin.
  */
 void xensiv_bgt60cutrxx_platform_rst_set(const void* iface, bool val);
@@ -85,20 +85,20 @@ void xensiv_bgt60cutrxx_platform_rst_set(const void* iface, bool val);
 /**
  * @brief Sets the spi chip select pin for the xensiv_bgt60cutrxx to given value.
  *
- * This function is used to set the SPI CS pin for the XENSIV(TM) BGT60CUTRXX sensor.
+ * This function is used to set the SPI CS pin for the XENSIV(TM) BGT60CUTRxx sensor.
  *
- * @param iface Pointer to the interface structure for the XENSIV(TM) BGT60CUTRXX sensor.
+ * @param iface Pointer to the interface structure for the XENSIV(TM) BGT60CUTRxx sensor.
  * @param val The value to set for the chip select pin.
  */
 void xensiv_bgt60cutrxx_platform_spi_cs_set(const void* iface, bool val);
 
 /**
- * @brief Performs a SPI transfer of 16-bit data using the XENSIV(TM) BGT60CUTRXX sensor.
+ * @brief Performs a SPI transfer of 16-bit data using the XENSIV(TM) BGT60CUTRxx sensor.
  *
  * This function transfers data from the transmit buffer (`txd`) to the receive buffer (`rxd`) using SPI communication.
  * The transfer length is specified by the `len` parameter.
  *
- * @param iface Pointer to the XENSIV(TM) BGT60CUTRXX device structure.
+ * @param iface Pointer to the XENSIV(TM) BGT60CUTRxx device structure.
  * @param txd Pointer to the transmit buffer containing the data to be sent.
  * @param rxd Pointer to the receive buffer where the received data will be stored.
  * @param len The length of the data to be transferred, in number of 16-bit words.
@@ -108,12 +108,12 @@ void xensiv_bgt60cutrxx_platform_spi_cs_set(const void* iface, bool val);
  */
 int32_t xensiv_bgt60cutrxx_platform_spi_transfer16(void* iface, const uint16_t* txd, uint16_t* rxd, uint32_t len);
 /**
- * @brief Reads data from the specified memory of the XENSIV(TM) BGT60CUTRXX sensor.
+ * @brief Reads data from the specified memory of the XENSIV(TM) BGT60CUTRxx sensor.
  *
- * This function reads data from the memory of the XENSIV(TM) BGT60CUTRXX sensor.
+ * This function reads data from the memory of the XENSIV(TM) BGT60CUTRxx sensor.
  * If the DMA is configured and enabled, the data is read via DMA.
  *
- * @param iface Pointer to the XENSIV(TM) BGT60CUTRXX device structure.
+ * @param iface Pointer to the XENSIV(TM) BGT60CUTRxx device structure.
  * @param txd Pointer to the transmit buffer containing the data to be sent.
  * @param rxd Pointer to the buffer where the received data will be stored.
  * @param len The number of data elements to read from the device in 16bit words.

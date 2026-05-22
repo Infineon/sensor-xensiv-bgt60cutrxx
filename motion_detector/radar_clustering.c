@@ -24,27 +24,27 @@ int32_t clustering_init(clustering_t* clustering, clustering_settings_t* setting
     // Input validation
     if ((clustering == NULL) || (settings == NULL))
     {
-        return -1;
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_POINTER;
     }
 
     if ((settings->max_rows <= 0) || (settings->max_rows > CLUSTERING_MAX_HISTORY_ROWS))
     {
-        return -2;
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_PARAMETER;
     }
 
     if (settings->min_range_m < 0.0f)
     {
-        return -3;
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_PARAMETER;
     }
 
-    if (settings->dbscan_eps <= 0.0f)
+    if (settings->dbscan_eps_m <= 0.0f)
     {
-        return -4;
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_PARAMETER;
     }
 
     if (settings->dbscan_min_samples <= 0)
     {
-        return -5;
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_PARAMETER;
     }
 
     // Initialize configuration and internal state
@@ -66,7 +66,7 @@ int32_t clustering_init(clustering_t* clustering, clustering_settings_t* setting
     }
 
     // Initialize DBSCAN
-    clustering->dbscan.eps = settings->dbscan_eps;
+    clustering->dbscan.eps_m = settings->dbscan_eps_m;
     clustering->dbscan.min_samples = settings->dbscan_min_samples;
     return dbscan_initialize(&clustering->dbscan);
 }
@@ -77,12 +77,12 @@ int32_t clustering_append_row(clustering_t* clustering, uint8_t num_points, poin
     // Input validation
     if ((clustering == NULL) || (points == NULL))
     {
-        return -1;
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_POINTER;
     }
 
     if (num_points > CLUSTERING_MAX_POINTS_PER_ROW)
     {
-        return -2;
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_PARAMETER;
     }
 
     // Purge oldest row if needed (when at or beyond max_rows)
@@ -124,7 +124,7 @@ int32_t clustering_purge_oldest_row(clustering_t* clustering)
     // Input validation
     if (clustering == NULL)
     {
-        return -1;
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_POINTER;
     }
 
     // Return if there are no rows to purge
@@ -148,7 +148,7 @@ int32_t clustering_runner(clustering_t* clustering, uint8_t num_targets, motion_
 {
     if ((clustering == NULL) || (targets == NULL) || (num_targets > CLUSTERING_MAX_POINTS_PER_ROW))
     {
-        return -1; // Invalid input
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_POINTER;
     }
 
     // Append new points to clustering history
@@ -162,14 +162,14 @@ int32_t clustering_runner(clustering_t* clustering, uint8_t num_targets, motion_
     const int32_t points_added = clustering_append_row(clustering, num_targets, points);
     if (points_added < 0)
     {
-        return -2; // Error adding points
+        return points_added; // Propagate error when adding points
     }
 
     // Perform DBSCAN clustering
     const int num_clusters = dbscan_cluster(&clustering->dbscan);
     if (num_clusters < 0)
     {
-        return -2; // Error during clustering
+        return num_clusters; // Propagate error during DBSCAN clustering
     }
 
     return num_clusters;
@@ -180,7 +180,7 @@ int32_t clustering_get_centroids(clustering_t* clustering, point_polar_t* centro
 {
     if ((clustering == NULL) || (centroids == NULL))
     {
-        return -1; // Invalid input
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_POINTER;
     }
 
     int32_t index = 0;
@@ -207,7 +207,7 @@ int32_t clustering_process(motion_detection_t* motion_detection, clustering_t* c
 {
     if ((clustering == NULL) || (motion_detection == NULL))
     {
-        return -1; // Invalid input
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_POINTER;
     }
 
     // process RD sequence results

@@ -1,6 +1,6 @@
-# XENSIV™ BGT60CUTRxx Radar Sensor Release Notes
+# XENSIV&trade; BGT60CUTRxx Radar Sensor Release Notes
 
-This library provides functions for interfacing with the XENSIV™ BGT60CUTRxx 60GHz FMCW radar sensors.
+This library provides functions for interfacing with the XENSIV&trade; BGT60CUTRxx 60GHz FMCW radar sensors.
 
 ## What's included?
 
@@ -8,8 +8,26 @@ This library provides functions for interfacing with the XENSIV™ BGT60CUTRxx 6
 - APIs for configuring the interrupt behavior
 - APIs for reading the sensor data
 - APIs for reading the motion detection data
+- APIs for configuring and processing clustering of detected targets
+- APIs for configuring and processing clutter localization
+- Production test code for the XENSIV™ BGT60CUTRxx
+- APIs for deep sleep and wake up of the sensor
 
 ## What Changed?
+
+### v1.1.0 (public release)
+
+In this version, the **deep sleep** feature for the XENSIV™ BGT60CUTRxx has been added. This feature allows the sensor to enter a low-power state, reducing power consumption when the sensor is not actively in use. Additionally, the **wake up** feature has been implemented to bring the sensor back to its operational state from deep sleep.
+
+
+### Add
+- **Power mode parameter**: added to the initialization function to select either active or deep sleep mode
+- **Power mode parameter**: flag to enable deep sleep mode after ADC Calibration
+- **Clutter localization**: deep sleep mode is now also supported in the clutter localization
+- **Clutter localization**: interface to write the exclusion zones to the sensor
+- **Deep sleep**: interface function to put the sensor into deep sleep mode
+- **Wake up**: interface function to wake up the sensor from deep sleep mode
+ 
 
 ### v1.0.0 (public release)
 
@@ -17,9 +35,9 @@ This is the public release of the Xensiv cmos radar driver to demonstrate Infine
 
 ### v0.5.2 (internal release)
 
-In this version, **production tests** for the XENSIV™ BGT60CUTRxx have been improved. Additionally, on the driver the source code has been formatted according to a coding style formatting tool to improve code readability and maintainability.
+In this version, **production tests** for the XENSIV&trade; BGT60CUTRxx have been improved. Additionally, on the driver the source code has been formatted according to a coding style formatting tool to improve code readability and maintainability.
 
-The driver has now been integrated into the repository which is used for the ModusToolbox™ code examples. This allows easier maintenance and faster updates of the driver in the future.
+The driver has now been integrated into the repository which is used for the ModusToolbox&trade; code examples. This allows easier maintenance and faster updates of the driver in the future.
 
 #### Change
 - Improved antenna test settings: Increased number of samples, bandwidth, and other enhancements.
@@ -40,7 +58,7 @@ The driver has now been integrated into the repository which is used for the Mod
 
 ### v0.5.0 (internal release)
 
-In this version the **clustering** feature for the XENSIV™ BGT60CUTRxx has been added. The clustering feature groups detected targets based on their range, azimuth, and elevation dimensions.
+In this version the **clustering** feature for the XENSIV&trade; BGT60CUTRxx has been added. The clustering feature groups detected targets based on their range, azimuth, and elevation dimensions.
 
 #### Add
 - **Clustering**: structures and interface functions to configure and process clustering of detected targets
@@ -48,7 +66,7 @@ In this version the **clustering** feature for the XENSIV™ BGT60CUTRxx has bee
 
 ### v0.4.0 (internal release)
 
-In this version the **EOL tests** for the XENSIV™ BGT60CUTRxx have been added. 
+In this version the **EOL tests** for the XENSIV&trade; BGT60CUTRxx have been added. 
 Furthermore, the **clutter localization** feature has been finalized and additional variables for **motion detection** have been added.
 
 #### Add
@@ -58,7 +76,7 @@ Furthermore, the **clutter localization** feature has been finalized and additio
 - **Clutter localization**: feature is periodically enabled to update the clutter zones
 - **Clutter localization**: timeout feature to reset the clutter zones if no motion is detected for a certain time
 - **Platform dependent code for Linux**: platform assert statement added to check for NULL pointers in functions
-- **Production test code** for XENSIV™ BGT60CUTRxx
+- **Production test code** for XENSIV&trade; BGT60CUTRxx
 
 #### Fix
 - **Motion detection**: fixed wrong assignment of azimuth and elevation angle with their corresponding E- and H-plane in the function radar_motion_detection_process_targets()

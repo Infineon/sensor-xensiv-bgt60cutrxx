@@ -68,10 +68,10 @@ typedef struct
     int32_t static_check_frame_count;          /**< Minimum number of frames in history before clustering is performed
                                                 */
     int32_t cluster_clear_counter_threshold;   /**< Threshold for clearing cluster history counters */
-    float dbscan_eps;                          /**< DBSCAN epsilon parameter - maximum distance between neighboring
-                                                  points */
-    int32_t dbscan_min_samples;               /**< DBSCAN min_samples parameter - minimum points required to form a
-                                                 cluster */
+    float dbscan_eps_m;                        /**< DBSCAN epsilon parameter - maximum distance between neighboring
+                                                  points in meters */
+    int32_t dbscan_min_samples;                /**< DBSCAN min_samples parameter - minimum points required to form a
+                                                  cluster */
 } clustering_settings_t;
 
 /**
@@ -138,6 +138,9 @@ int32_t clustering_init(clustering_t* clustering, clustering_settings_t* setting
 /**
  * @brief Process motion detection data through the clustering pipeline
  *
+ * Clustering is intended for grouping and maintaining detections of static targets
+ * in clusters, by identifying locations of targets over time.
+ *
  * This is the main entry point for radar clustering functionality. The function:
  * 1. Extracts detection targets from the motion detection structure
  * 2. Adds new targets to the clustering history buffer
@@ -149,6 +152,9 @@ int32_t clustering_init(clustering_t* clustering, clustering_settings_t* setting
  * The clustering is only performed when:
  * - ULP (Ultra Low Power) sequence is complete (motion_detection->ulp_event == true)
  * - Sufficient frames are available (static_check_frame_counter >= static_check_frame_count)
+ *
+ * @note only range, azimuth and elevation from the ULP detections are used for clustering. The
+ * ULP acquisition sequence shall be optimized for static presence detection, accordingly.
  *
  * @param motion_detection Pointer to motion detection data containing new targets
  * @param clustering Pointer to the clustering algorithm state

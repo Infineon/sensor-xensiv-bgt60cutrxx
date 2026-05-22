@@ -29,6 +29,7 @@
 #include <stdlib.h>
 
 #include "radar_motion_detection.h"
+#include "xensiv_bgt60cutrxx.h"
 #include "xensiv_bgt60cutrxx_regs.h"
 #include "xensiv_bgt60cutrxx_platform.h"
 
@@ -85,7 +86,7 @@ static float q0_to_float(int x, q_exponent_t e)
 
 
 int32_t radar_motion_detection_init(motion_detection_t* motion_detection,
-                                    xensiv_bgt60cutrxx_t* radar_sensor,
+                                    xensiv_bgt60cutrxx_t* dev,
                                     uint32_t* rd_data_buffer,
                                     const sequence_settings_t* rd_sequence_settings,
                                     const sequence_settings_t* ulp_sequence_settings)
@@ -93,21 +94,20 @@ int32_t radar_motion_detection_init(motion_detection_t* motion_detection,
     int32_t ret = XENSIV_BGT60CUTRXX_STATUS_OK;
 
     // Input validation
-    if ((motion_detection == NULL) || (radar_sensor == NULL) || (rd_data_buffer == NULL) ||
+    if ((motion_detection == NULL) || (dev == NULL) || (rd_data_buffer == NULL) ||
         (rd_sequence_settings == NULL) || (ulp_sequence_settings == NULL))
     {
-        return -1;
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_POINTER;
     }
 
     if ((rd_sequence_settings->enabled == false) && (ulp_sequence_settings->enabled == false))
     {
-        return -1;  // at least one sequence must be enabled
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_PARAMETER;  // at least one sequence must be enabled
     }
 
     //connect motion detector with radar sensor
-    motion_detection->radar_sensor = radar_sensor;
+    motion_detection->radar_sensor = dev;
     motion_detection->rd_data_buffer = rd_data_buffer;
-    motion_detection->radar_sensor->mode = ACTIVE_MODE;
 
     motion_detection->rd_sequence_settings = rd_sequence_settings;
     motion_detection->ulp_sequence_settings = ulp_sequence_settings;
@@ -214,7 +214,7 @@ int32_t radar_motion_detection_targets_read(motion_detection_t* motion_detection
     // Input validation
     if (motion_detection == NULL)
     {
-        return -1;
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_POINTER;
     }
 
     // clear the flags
@@ -227,10 +227,10 @@ int32_t radar_motion_detection_targets_read(motion_detection_t* motion_detection
     ret = xensiv_bgt60cutrxx_get_irq_status(motion_detection->radar_sensor, &irq_status);
     if (ret != XENSIV_BGT60CUTRXX_STATUS_OK)
     {
-        DEBUG_PRINT("Error reading IRQ status: %ld\n", ret);
+        DEBUG_PRINT("Error reading IRQ status: %" PRId32 "\n", ret);
         return ret;
     }
-    DEBUG_PRINT("IR_STAT: 0x%08lX\n", irq_status);
+    DEBUG_PRINT("IR_STAT: 0x%08" PRIX32 "\n", irq_status);
 
     xensiv_bgt60cutrxx_get_reg(motion_detection->radar_sensor, BGT60CUTR13B_REG_SEQ1_STAT, &seq1_status);
     uint16_t seq1_counter_new = (uint16_t)(seq1_status & BGT60CUTR13B_SEQ1_STAT_SEQ_CNT_msk);
@@ -239,33 +239,43 @@ int32_t radar_motion_detection_targets_read(motion_detection_t* motion_detection
     uint16_t seq2_counter_new = (uint16_t)(seq2_status & BGT60CUTR13B_SEQ2_STAT_SEQ_CNT_msk);
     DEBUG_PRINT("Sequence 2 counter actual: %d\n\r", seq2_counter_new);
 
+
     //first check for sequence 1
     if (irq_status & BGT60CUTR13B_IR_STAT_SEQ1_DONE_MSK)
     {
         DEBUG_PRINT("Event triggered ==> SEQ1 done\n\r");
         motion_detection->seq1_done = true;
         motion_detection->sequence = 1;
-        if (radar_motion_detection_evaluate_sequence_counter(seq1_counter_new,
-                                                             motion_detection->sequence_counters.seq1_counter) == false)
+    }
+
+    // then check for sequence 2
+    if (irq_status & BGT60CUTR13B_IR_STAT_SEQ2_DONE_MSK)
+    {
+        DEBUG_PRINT("Event triggered ==> SEQ2 done\n\r");
+        motion_detection->seq2_done = true;
+        motion_detection->sequence = 2;
+    }
+
+    //delay only required in active mode, but not in any power down modes
+    if (motion_detection->radar_sensor->power_mode == ACTIVE_MODE)
+    {
+        DEBUG_PRINT("Radar in deep sleep mode, delay not required\n\r");
+
+        // Sequence 2 is done, but target registers may not be available yet.
+        if (((irq_status & BGT60CUTR13B_IR_STAT_ULP_EVENT_MSK) == 0) ||
+            ((irq_status & BGT60CUTR13B_IR_STAT_RD_EVENT_MSK) == 0))
         {
-            DEBUG_PRINT("Sequence counter mismatch: prev. %d, actual %d\n\r",
-                        motion_detection->sequence_counters.seq1_counter, seq1_counter_new);
-        }
-        // Sequence 1 is done, but target registers may not be available yet.
-        if ((irq_status & BGT60CUTR13B_IR_STAT_ULP_EVENT_MSK) == 0)
-        {
-            DEBUG_PRINT("ULP event not set, waiting for it 5ms and read ir_stat again\n\r");
+            DEBUG_PRINT("RD event not set, waiting for it 5ms and read ir_stat again\n\r");
             xensiv_bgt60cutrxx_platform_delay(5);
             ret = xensiv_bgt60cutrxx_get_irq_status(motion_detection->radar_sensor, &irq_status);
             if (ret != XENSIV_BGT60CUTRXX_STATUS_OK)
             {
-                DEBUG_PRINT("Error reading IRQ status: %ld\n", ret);
+                DEBUG_PRINT("Error reading IRQ status: %" PRId32 "\n", ret);
                 return ret;
             }
-            DEBUG_PRINT("IR_STAT: 0x%08lX\n", irq_status);
+            DEBUG_PRINT("IR_STAT: 0x%08" PRIX32 "\n", irq_status);
         }
     }
-
 
     // check if ULP event is set
     if (irq_status & BGT60CUTR13B_IR_STAT_ULP_EVENT_MSK)
@@ -280,41 +290,11 @@ int32_t radar_motion_detection_targets_read(motion_detection_t* motion_detection
             DEBUG_PRINT("Sequence counter mismatch: prev. %d, actual %d\n\r",
                         motion_detection->sequence_counters.seq1_counter, seq1_counter_new);
         }
-        ret = xensiv_bgt60cutrxx_get_md_targets(motion_detection->radar_sensor, (uint32_t*)motion_detection->targets,
-                                                BGT60CUTR13_MD_TARGET_REGISTERS);
-        if (ret != XENSIV_BGT60CUTRXX_STATUS_OK)
-        {
-            DEBUG_PRINT("Error reading motion detection targets: %ld\n", ret);
-            return ret;
-        }
+        DEBUG_PRINT("Error reading motion detection targets: %" PRId32 "\n", ret);
     }
 
-    // then check for sequence 2
-    if (irq_status & BGT60CUTR13B_IR_STAT_SEQ2_DONE_MSK)
-    {
-        DEBUG_PRINT("Event triggered ==> SEQ2 done\n\r");
-        motion_detection->seq2_done = true;
-        motion_detection->sequence = 2;
-        if (radar_motion_detection_evaluate_sequence_counter(seq2_counter_new,
-                                                             motion_detection->sequence_counters.seq2_counter) == false)
-        {
-            DEBUG_PRINT("Sequence counter mismatch: prev. %d, actual %d\n\r",
-                        motion_detection->sequence_counters.seq2_counter, seq2_counter_new);
-        }
-        // Sequence 2 is done, but target registers may not be available yet.
-        if ((irq_status & BGT60CUTR13B_IR_STAT_RD_EVENT_MSK) == 0)
-        {
-            DEBUG_PRINT("RD event not set, waiting for it 5ms and read ir_stat again\n\r");
-            xensiv_bgt60cutrxx_platform_delay(5);
-            ret = xensiv_bgt60cutrxx_get_irq_status(motion_detection->radar_sensor, &irq_status);
-            if (ret != XENSIV_BGT60CUTRXX_STATUS_OK)
-            {
-                DEBUG_PRINT("Error reading IRQ status: %ld\n", ret);
-                return ret;
-            }
-            DEBUG_PRINT("IR_STAT: 0x%08lX\n", irq_status);
-        }
-    }
+    DEBUG_PRINT("Error reading IRQ status: %" PRId32 "\n", ret);
+    DEBUG_PRINT("IR_STAT: 0x%08" PRIX32 "\n", irq_status);
 
     // check for RD event
     if (irq_status & BGT60CUTR13B_IR_STAT_RD_EVENT_MSK)
@@ -329,11 +309,15 @@ int32_t radar_motion_detection_targets_read(motion_detection_t* motion_detection
             DEBUG_PRINT("Sequence counter mismatch: prev. %d, actual %d\n\r",
                         motion_detection->sequence_counters.seq2_counter, seq2_counter_new);
         }
+    }
+
+    if ((motion_detection->ulp_event == true) || (motion_detection->rd_event == true))
+    {
         ret = xensiv_bgt60cutrxx_get_md_targets(motion_detection->radar_sensor, (uint32_t*)motion_detection->targets,
                                                 BGT60CUTR13_MD_TARGET_REGISTERS);
         if (ret != XENSIV_BGT60CUTRXX_STATUS_OK)
         {
-            DEBUG_PRINT("Error reading motion detection targets: %ld\n", ret);
+            DEBUG_PRINT("Error reading motion detection targets: %" PRId32 "\n", ret);
             return ret;
         }
     }
@@ -349,37 +333,6 @@ int32_t radar_motion_detection_targets_read(motion_detection_t* motion_detection
 }
 
 
-int32_t radar_motion_detection_wakeup(motion_detection_t* motion_detection, bool val)
-{
-    int32_t ret = XENSIV_BGT60CUTRXX_STATUS_OK;
-    ret = xensiv_bgt60cutrxx_set_xosc(motion_detection->radar_sensor, val);
-    if (ret != XENSIV_BGT60CUTRXX_STATUS_OK)
-    {
-        DEBUG_PRINT("Error setting XOSC: %ld\n", ret);
-        return ret;
-    }
-    if (val)
-    {
-        xensiv_bgt60cutrxx_platform_delay(BGT60CUTRxx_CLK_SETUP_TIME_MS);
-        while (!motion_detection->radar_sensor->xosc_active)
-        {
-            ret = xensiv_bgt60cutrxx_get_xosc_state(motion_detection->radar_sensor);
-            if (ret != XENSIV_BGT60CUTRXX_STATUS_OK)
-            {
-                DEBUG_PRINT("Error reading XOSC state: %ld\n", ret);
-                return ret;
-            }
-            if (motion_detection->radar_sensor->xosc_active)
-            {
-                break;
-            }
-            xensiv_bgt60cutrxx_platform_delay(BGT60CUTRxx_CLK_SETUP_TIME_MS);
-        }
-    }
-    return ret;
-}
-
-
 int32_t radar_motion_detection_process(motion_detection_t* motion_detection)
 {
     int32_t ret = XENSIV_BGT60CUTRXX_STATUS_OK;
@@ -387,17 +340,38 @@ int32_t radar_motion_detection_process(motion_detection_t* motion_detection)
     // Input validation
     if (motion_detection == NULL)
     {
-        return -1;
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_POINTER;
     }
 
     motion_detection->number_of_detected_targets = 0;
+
+    if (motion_detection->radar_sensor->power_mode == DEEP_SLEEP_MODE)
+    {
+        ret = xensiv_bgt60cutrxx_wakeup(motion_detection->radar_sensor);
+        if (ret != XENSIV_BGT60CUTRXX_STATUS_OK)
+        {
+            return ret;
+        }
+        DEBUG_PRINT("XOSC power up %" PRId32 "\n", ret);
+    }
 
     // read motion detection target & zone information
     ret = radar_motion_detection_targets_read(motion_detection);
     if (ret != XENSIV_BGT60CUTRXX_STATUS_OK)
     {
-        DEBUG_PRINT("Error reading motion detection targets: %ld\n", ret);
+        DEBUG_PRINT("Error reading motion detection targets: %" PRId32 "\n", ret);
         return ret;
+    }
+
+    if (motion_detection->radar_sensor->power_mode == DEEP_SLEEP_MODE)
+    {
+        ret = xensiv_bgt60cutrxx_set_xosc(motion_detection->radar_sensor, XENSIV_BGT60CUTRXX_XOSC_POWER_DOWN);
+        if (ret != XENSIV_BGT60CUTRXX_STATUS_OK)
+        {
+            DEBUG_PRINT("Error setting XOSC %" PRId32 "\n", ret);
+            return ret;
+        }
+        DEBUG_PRINT("XOSC power down %" PRId32 "\n", ret);
     }
 
     if (motion_detection->rd_event)

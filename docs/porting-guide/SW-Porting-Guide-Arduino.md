@@ -1,55 +1,60 @@
-# XENSIV™ BGT60CUTRXX Radar Sensor Driver Porting Guide
-## XMC1400 Arduino Kit Edition
+# XENSIV&trade; BGT60CUTRxx radar sensor driver porting guide
 
-**Version:** 1.1
-**Date:** February 2026
-**Author:** Infineon Technologies AG
-**Target Platform:** KIT_XMC1400_ARDUINO with XMC-for-Arduino Core & XENSIV Sensor Shield with BGT60CUTRxx radar sensor
+## XMC&trade; XMC1400 Arduino Kit edition
+
+**Version:** 1.1 <br>
+**Date:** March 2026 <br>
+**Author:** Infineon Technologies AG <br>
+**Target platform:** KIT_XMC1400_ARDUINO kit with XMC-for-Arduino Core and XENSIV&trade; Sensor Shield with BGT60CUTRxx radar sensor
 
 ---
 
-## Table of Contents
+## Table of contents
 
 This guide uses section headers below; in generated Doxygen output, navigation is provided automatically.
 
 ---
 
-## 1. Introduction
+## Introduction
 
-### 1.1 Document Purpose
+### Scope
 
-This porting guide provides embedded developers with comprehensive instructions for adapting the Infineon XENSIV™ BGT60CUTRXX 60GHz radar sensor driver to the **KIT_XMC1400_ARDUINO** evaluation board using the **XMC-for-Arduino** ecosystem. Further, the guide provides the snippet to showcase the porting of <b>motion detection</b> code example in combinition with radar sensor's on-chip capabilities.
+This porting guide provides embedded developers with comprehensive instructions for adapting the Infineon XENSIV&trade; BGT60CUTRxx 60 GHz radar sensor driver to the **KIT_XMC1400_ARDUINO** evaluation board using the **XMC-for-Arduino** ecosystem. Additionally, the guide provides the snippet to showcase the porting of <b>motion detection</b> code example in combination with radar sensor's on-chip capabilities.
 
 The driver follows a layered architecture that separates platform-independent logic from hardware-specific implementations, enabling straightforward porting to the Arduino environment.
 
-**Target Audience:**
+**Target audience:**
 - Embedded software engineers
 - Hardware integration engineers
 - Makers and hobbyists working with radar sensing applications
 
-**Target Platform:**
-- **Arduino Base Board:** KIT_XMC1400_ARDUINO
--- ***MCU:*** XMC1402 (Arm® Cortex®-M0, 48 MHz)
+**Target platform:**
+- **Arduino baseboard:** KIT_XMC1400_ARDUINO
+- **MCU:** XMC1402 (Arm&reg; Cortex&reg;-M0, 48 MHz)
 
-    ![](xmc1400_arduino_kit.png)
-- **Sensor Daugther Board** XENSIV Sensor Shield with <b>BGT60CUTR13</b> Radar Sensor
-![](xensiv_sensor_shield.png)
+   ![](xmc1400_arduino_kit.png)
+- **Sensor daughter board:** XENSIV&trade; Sensor Shield with <b>BGT60CUTR13AIP</b> radar sensor
+    ![](xensiv_sensor_shield.png)
 
 
-- **Development Environment:** Arduino IDE 2.0+ with XMC-for-Arduino Core (v4.0.0+)
+- **Development environment:** Arduino IDE 2.0+ with XMC-for-Arduino Core (v4.0.0+)
 
-### 1.2 Driver Architecture Overview
+### Driver architecture overview
 
-The BGT60CUTRXX driver is designed with portability in mind, utilizing a **Hardware Abstraction Layer (HAL)** pattern:
+The BGT60CUTRxx driver is designed with portability using a **Hardware Abstraction Layer (HAL)** pattern.
 
-| Layer | Description | Modification Required |
-|-------|-------------|----------------------|
-| **Core Driver** | Platform-independent radar control logic | ❌ No |
-| **Register Definitions** | Sensor register maps and bit definitions | ❌ No |
-| **Platform HAL** | Hardware-specific implementations | ✅ Yes |
-| **Motion Detector** | Clustering and clutter localization algorithms | ❌ No |
+**Table 1.  HAL pattern**
 
-**Key Features:**
+Layer | Description | Modification required
+-------|-------------|----------------------
+**Core driver** | Platform-independent radar control logic | ❌ No
+**Register definitions** | Sensor register maps and bit definitions | ❌ No
+**Platform HAL** | Hardware-specific implementations | ✅ Yes
+**Motion detector** | Clustering and clutter localization algorithms | ❌ No
+
+<br>
+
+**Key features:**
 - 60 GHz FMCW radar sensor support
 - Motion detection with clustering algorithms
 - Clutter localization capabilities
@@ -57,9 +62,9 @@ The BGT60CUTRXX driver is designed with portability in mind, utilizing a **Hardw
 - ADC calibration routines
 - Configurable interrupt handling
 - Support for 40 MHz and 80 MHz external crystal frequencies
-- IO voltage level configuration (1.2V / 1.8V)
+- I/O voltage level configuration (1.2 V/1.8 V)
 
-### 1.3 Driver Package File Structure
+### Driver package file structure
 
 ```
 sensor-xensiv-bgt60cutrxx/
@@ -73,7 +78,7 @@ sensor-xensiv-bgt60cutrxx/
 │   │   └── xensiv_bgt60cutrxxb_register_hal.h  # Base register definitions
 │   │
 │   ├── platform/
-│   │   └── mtb/                          # Reference PSoC6/ModusToolbox implementation, add your platform specific definitions here.
+│   │   └── mtb/                          # Reference PSOC 6(TM)/ModusToolbox(TM) implementation, add your platform-specific definitions here
 │   │       ├── xensiv_bgt60cutrxx_mtb.h
 │   │       └── xensiv_bgt60cutrxx_mtb.c
 │   │
@@ -94,75 +99,91 @@ sensor-xensiv-bgt60cutrxx/
 
 ---
 
-## 2. Porting Checklist
+## Porting checklists
 
-### 2.1 Hardware Requirements
+### Hardware requirements
 
-#### Essential Hardware Connections
+#### Essential hardware connections
 
-| Signal | Direction | Description | Required |
-|--------|-----------|-------------|----------|
-| **SPI_MOSI** | MCU → Radar | Master Out Slave In | ✅ |
-| **SPI_MISO** | Radar → MCU | Master In Slave Out | ✅ |
-| **SPI_CLK** | MCU → Radar | SPI Clock | ✅ |
-| **SPI_CS** | MCU → Radar | Chip Select (Active Low) | ✅ |
-| **RST** | MCU → Radar | Hardware Reset (Active Low) | ✅ |
-| **IRQ** | Radar → MCU | Interrupt Output | ⚠️ Optional*   |
-| **RS_SEL** | MCU → Shield | Radar Sensor Select | ✅ Shield |
-| **SPI_CS_SEL0** | MCU → Shield | SPI CS Multiplexer Select | ✅ Shield |
-| **DIO2** | MCU → Radar | Bootloader Disable | ✅ Shield |
-| **VDD** | Power | 1.8V or 3.3V supply | ✅ |
-| **GND** | Power | Ground reference | ✅ |
+**Table 2. Hardware connections**
 
-> ⚠️ **Note:** : Interrupt is shown optional, since polling can be used alternately. However this example uses HW interrupt.
+Signal | Direction | Description | Required
+--------|-----------|-------------|----------
+**SPI_MOSI** | MCU → Radar | Master Out Slave In | ✅
+**SPI_MISO** | Radar → MCU | Master In Slave Out | ✅
+**SPI_CLK** | MCU → Radar | SPI clock | ✅ Yes
+**SPI_CS** | MCU → Radar | Chip Select (Active Low) | ✅
+**RST** | MCU → Radar | Hardware reset (Active Low) | ✅
+**IRQ** | Radar → MCU | Interrupt output | ⚠️ Optional*
+**RS_SEL** | MCU → Shield | Radar sensor select | ✅ Shield
+**SPI_CS_SEL0** | MCU → Shield | SPI CS multiplexer select | ✅ Shield
+**DIO2** | MCU → Radar | Bootloader disable | ✅ Shield
+**VDD** | Power | 1.8 V or 3.3 V supply | ✅
+**GND** | Power | Ground reference | ✅
 
-#### Power Supply Requirements
+<br>
 
-| Parameter | Value | Notes |
-|-----------|-------|-------|
-| VDD Supply | 1.8V typical | Check sensor variant |
-| VDDIO | 1.2V or 1.8V | Configurable via `IO_CTRL` register |
-| Current (Active) | ~100mA typical | During radar operation |
-| Current (Sleep) | <1µA | Deep sleep mode |
+> ⚠️ **Note:** In **Table 2**, the interrupt marked as optional because polling can be used as an alternative; however, this example uses a hardware interrupt.
 
-### 2.2 SPI Configuration Requirements
+#### Power supply requirements
 
-> ⚠️ **CRITICAL:** The BGT60CUTRXX uses a specific SPI configuration that must be followed precisely.
+**Table 3. Power supply requirements**
 
-#### SPI Parameters
+Parameter | Value | Notes
+-----------|-------|-------
+VDD supply | 1.8 V typical | Check sensor variant
+VDDIO | 1.2 V or 1.8 V | Configurable via `IO_CTRL` register
+Current (Active) | ~10 mA typical | During radar operation
+Current (Sleep) | <1µA | Deep sleep mode
 
-| Parameter | Required Value | Notes |
-|-----------|----------------|-------|
-| **Data Width** | 16-bit | Driver uses 16-bit word transfers ⚠️ |
-| **Bit Order** | LSB First | Default configuration |
-| **Clock Polarity (CPOL)** | 0 | Clock idle low |
-| **Clock Phase (CPHA)** | 0 | Sample on leading edge |
-| **SPI Mode** | Mode 0 | CPOL=0, CPHA=0 |
-| **Max Clock Speed** | 25 MHz | Currently using: 4 Mhz  |
-| **Chip Select** | Software controlled | Manual CS assertion required |
+<br>
 
-> **Note**: ⚠️ Here driver assumes 16 bit SPI transfers, however, if platform implements 8 bit transfers, following the correct commanding sequence however would still execute correct read/write operations on device.
+### SPI configuration requirements
 
-### 2.3 GPIO Requirements
+> ⚠️ **CRITICAL:** The BGT60CUTRxx radar sensor mandates a specific SPI configuration for correct configuration.
 
-| GPIO Function | Type | Active Level | Notes |
-|---------------|------|--------------|-------|
-| **Reset Pin (RSTN)** | Output, Push-Pull | Active LOW | Must support >1ms pulse |
-| **CS Pin** | Output, Push-Pull | Active LOW | Software-controlled |
-| **IRQ Pin** | Input, Pull-down | Active HIGH | Rising edge interrupt |
-| **RS_SEL** | Output, Push-Pull | Active HIGH | Selects BGT60CUTRXX on shield |
-| **SPI_CS_SEL0** | Output, Push-Pull | Active LOW | CS multiplexer control |
-| **DIO2** | Output, Push-Pull | Active HIGH | Disables bootloader mode |
+#### SPI parameters
 
-### 2.4 Software Prerequisites
+**Table 4. SPI parameters**
 
-#### Required Tools
+Parameter | Required value | Notes
+-----------|----------------|-------
+**Data Width** | 16-bit | Driver uses 16-bit word transfers ⚠️
+**Bit Order** | LSB First | Default configuration
+**Clock Polarity (CPOL)** | 0 | Clock idle low
+**Clock Phase (CPHA)** | 0 | Sample on leading edge
+**SPI Mode** | Mode 0 | CPOL=0, CPHA=0
+**Max Clock Speed** | 25 MHz | Currently using 4 MHz
+**Chip Select** | Software controlled | Manual CS assertion required
+
+<br>
+
+> **Note**: ⚠️ The driver is designed for 16‑bit SPI transfers; however, platforms that implement 8‑bit transfers can still achieve correct read and write operations by adhering to the required command sequence.
+
+### GPIO requirements
+
+**Table 5. GPIO requirements**
+
+GPIO function | Type | Active level | Notes |
+---------------|------|--------------|-------|
+**Reset Pin (RSTN)** | Output, Push-Pull | Active LOW | Must support >1 ms pulse
+**CS Pin** | Output, Push-Pull | Active LOW | Software-controlled
+**IRQ Pin** | Input, Pull-down | Active HIGH | Rising edge interrupt
+**RS_SEL** | Output, Push-Pull | Active HIGH | Selects BGT60CUTRxx on shield
+**SPI_CS_SEL0** | Output, Push-Pull | Active LOW | CS multiplexer control
+**DIO2** | Output, Push-Pull | Active HIGH | Disables bootloader mode
+
+<br>
+
+### Software prerequisites
+
+#### Required tools
 - **Arduino IDE:** Version 2.0 or later
 - **XMC-for-Arduino Core:** Version 4.0.0 or later
 - **SEGGER J-Link:** Latest version for programming/debugging
 - **Python 3.x:** With `pyserial` package installed
 
-#### Required Standard Libraries
+#### Required standard libraries
 ```c
 #include <stdint.h>   // uint8_t, uint16_t, uint32_t, int32_t
 #include <stdbool.h>  // bool, true, false
@@ -171,13 +192,13 @@ sensor-xensiv-bgt60cutrxx/
 ```
 ---
 
-## 3. Driver Architecture Deep Dive
+## Driver architecture
 
-### 3.1 Platform-Independent Layer
+### Platform-independent layer
 
 The core driver (`xensiv_bgt60cutrxx.c`) provides all radar control functionality:
 
-#### Main Data Structure
+#### Main data structure
 
 ```c
 typedef struct
@@ -187,43 +208,49 @@ typedef struct
     uint32_t device_id;                       // Hardware device ID
     xensiv_bgt60cutrxx_sleep_mode_t mode;     // Current sleep mode
     xensiv_bgt60cutrxx_clk_t clk_freq_xtal;   // Crystal frequency (40/80 MHz)
-    xensiv_bgt60cutrxx_io_level_t io_level;   // IO voltage level (1.2V/1.8V)
+    xensiv_bgt60cutrxx_io_level_t io_level;   // IO voltage level (1.2 V/1.8 V)
 } xensiv_bgt60cutrxx_t;
 ```
 
-#### Core API Functions
+#### Core API functions
 
-| Function | Description |
-|----------|-------------|
-| `xensiv_bgt60cutrxx_init()` | Initialize sensor with clock and IO settings |
-| `xensiv_bgt60cutrxx_detect_device()` | Verify sensor presence via HW ID |
-| `xensiv_bgt60cutrxx_config()` | Write register configuration array |
-| `xensiv_bgt60cutrxx_hard_reset()` | Perform hardware reset sequence |
-| `xensiv_bgt60cutrxx_soft_reset()` | Perform software reset |
-| `xensiv_bgt60cutrxx_perform_adc_calibration()` | Execute ADC calibration |
-| `xensiv_bgt60cutrxx_get_fifo()` | Read FIFO data |
-| `xensiv_bgt60cutrxx_get_rd_map()` | Read Range-Doppler map |
-| `xensiv_bgt60cutrxx_trigger_sequence0()` | Start measurement sequence |
-| `xensiv_bgt60cutrxx_get_irq_status()` | Read interrupt status register |
-| `xensiv_bgt60cutrxx_set_irq_clear()` | Clear interrupt flags |
+**Table 6. Core API functions**
 
-#### Status Codes
+Function | Description
+----------|-------------
+`xensiv_bgt60cutrxx_init()` | Initializes sensor with clock and I/O settings
+`xensiv_bgt60cutrxx_detect_device()` | Verifies sensor presence via hardware ID
+`xensiv_bgt60cutrxx_config()` | Writes register configuration array
+`xensiv_bgt60cutrxx_hard_reset()` | Performs hardware reset sequence
+`xensiv_bgt60cutrxx_soft_reset()` | Performs software reset
+`xensiv_bgt60cutrxx_perform_adc_calibration()` | Executes ADC calibration
+`xensiv_bgt60cutrxx_get_fifo()` | Reads FIFO data
+`xensiv_bgt60cutrxx_get_rd_map()` | Reads Range-Doppler map
+`xensiv_bgt60cutrxx_trigger_sequence0()` | Starts measurement sequence
+`xensiv_bgt60cutrxx_get_irq_status()` | Reads interrupt status register
+`xensiv_bgt60cutrxx_set_irq_clear()` | Clears interrupt flags
+
+<br>
+
+#### Status codes
 
 ```c
 #define XENSIV_BGT60CUTRXX_STATUS_OK                    (0)
-#define XENSIV_BGT60CUTRXX_STATUS_SPI_ERROR             (1)
-#define XENSIV_BGT60CUTRXX_STATUS_DEV_ERROR             (2)
-#define XENSIV_BGT60CUTRXX_STATUS_TIMEOUT_ERROR         (3)
-#define XENSIV_BGT60CUTRXX_STATUS_ADC_CALIBRATION_ERROR (4)
-#define XENSIV_BGT60CUTRXX_STATUS_RANGE_ZONE_ERROR      (5)
+#define XENSIV_BGT60CUTRXX_STATUS_INVALID_POINTER       (-1)
+#define XENSIV_BGT60CUTRXX_STATUS_INVALID_PARAMETER     (-2)
+#define XENSIV_BGT60CUTRXX_STATUS_NO_MEMORY             (-3)
+#define XENSIV_BGT60CUTRXX_STATUS_SPI_ERROR             (-4)
+#define XENSIV_BGT60CUTRXX_STATUS_DEV_ERROR             (-5)
+#define XENSIV_BGT60CUTRXX_STATUS_TIMEOUT_ERROR         (-6)
+#define XENSIV_BGT60CUTRXX_STATUS_ADC_CALIBRATION_ERROR (-7)
 ```
 
-### 3.2 Platform-Dependent Layer (HAL)
+### Platform-dependent Hardware Abstraction Layer (HAL)
 
-You must implement these 6 functions declared in `xensiv_bgt60cutrxx_platform.h`:
+Implement these six functions declared in `xensiv_bgt60cutrxx_platform.h`:
 
 ```c
-// Delay functions
+// Delays functions
 void xensiv_bgt60cutrxx_platform_delay(uint32_t ms);
 void xensiv_bgt60cutrxx_platform_delay_us(uint32_t us);
 
@@ -241,7 +268,7 @@ int32_t xensiv_bgt60cutrxx_platform_spi_read_block(void* iface,
 void xensiv_bgt60cutrxx_platform_assert(bool expr);
 ```
 
-### 3.3 Block Diagram
+### Block diagram
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -302,7 +329,7 @@ void xensiv_bgt60cutrxx_platform_assert(bool expr);
                                    │
                                    ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                    BGT60CUTRXX RADAR SENSOR                                 │
+│                    BGT60CUTRxx RADAR SENSOR                                 │
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
 │  │   ┌─────┐    ┌─────┐    ┌─────┐    ┌─────┐    ┌─────┐    ┌─────┐    │    │
 │  │   │ SPI │    │ RST │    │ IRQ │    │DIO2 │    │ VDD │    │ GND │    │    │
@@ -313,11 +340,11 @@ void xensiv_bgt60cutrxx_platform_assert(bool expr);
 
 ---
 
-## 4. Hardware Interface Specifications
+## Hardware interface specifications
 
-### 4.1 SPI Bus Timing Diagram
+### SPI bus timing diagram
 
-The BGT60CUTRXX uses 16-bit SPI transfers with LSB-first bit ordering:
+The BGT60CUTRxx radar sensor uses 16-bit SPI transfers with LSB-first bit ordering:
 
 ```
 CS
@@ -337,9 +364,9 @@ MISO ────┼──┼──┼──┼──┼──┼──┼──
          │D0│D1│D2│D3│D4│D5│D6│D7│D8│D9│D10│D11│D12│D13│D14│D15│
 ```
 
-#### SPI Protocol Format
+#### SPI protocol format
 
-**Write Operation (4 words = 64 bits):**
+**Write operation (4 words = 64 bits):**
 ```
 Word 0: [WR_BIT | ADDR[7:0] << 8]  (WR_BIT = 1)
 Word 1: [ADDR[15:8]]
@@ -347,7 +374,7 @@ Word 2: [DATA[15:0]]
 Word 3: [DATA[31:16]]
 ```
 
-**Read Operation (2 words command + 2 words data):**
+**Read operation (2 words command + 2 words data):**
 ```
 Command:
   Word 0: [ADDR[7:0] << 8]  (WR_BIT = 0)
@@ -357,12 +384,12 @@ Response:
   Word 1: [DATA[31:16]]
 ```
 
-### 4.2 Chip-Level Pin Connections
+### Chip-level pin connections
 
-#### BGT60CUTRXX Shield to XMC1400 Arduino Kit Connection Diagram
+#### BGT60CUTRxx Shield to XMC1400 Arduino Kit connection diagram
 
 ```
-    KIT_XMC1400_ARDUINO                XENSIV Sensor Shield with BGT60CUTR13
+    KIT_XMC1400_ARDUINO                XENSIV(TM) Sensor Shield with BGT60CUTR13AIP
     ┌───────────────────┐                    ┌───────────────────┐
     │                   │                    │                   │
     │  SPI_MOSI (D11)───┼──── MOSI ─────────►│ SPI_DI            │
@@ -383,17 +410,17 @@ Response:
     │                   │                    │                   │
     │  DIO2     (D5)────┼──── DIO2 ─────────►│ DIO2 (HIGH)       │
     │                   │                    │                   │
-    │  3.3V     ────────┼──── VDD ──────────►│ VDD               │
+    │  3.3 V    ────────┼──── VDD ──────────►│ VDD               │
     │                   │                    │                   │
     │  GND      ────────┼──── GND ──────────►│ GND               │
     │                   │                    │                   │
     └───────────────────┘                    └───────────────────┘
 ```
-**Note:**
-- SEL, SEL0, and DIO2 are shield-specific.
-- Since the XMC1400 Arduino kit does not allow interrupt registration on analog pin <b>A1</b>, the interrupt from pin A1 is externally routed to digital pin <b>D3</b>, where IRQ is registered.
+> **Note:**
+- SEL, SEL0, and DIO2 are shield-specific
+- As the XMC1400 Arduino kit does not allow interrupt registration on analog pin <b>A1</b>, the interrupt from pin A1 is externally routed to digital pin <b>D3</b>, where IRQ is registered
 
-### 4.3 Reset Timing Requirements
+### Reset timing requirements
 
 ```
 
@@ -406,23 +433,23 @@ RST ────┌                                                             
         Power-up                                                Device Ready
 ```
 
-**Reset Sequence:**
-1. Assert RST LOW (active)
-2. Wait minimum 1ms
-3. Release RST HIGH (inactive)
-4. Wait for device to initialize (~1ms for clock setup)
+**Reset sequence:**
+1. Asserts RST LOW (active)
+2. Waits minimum 1 ms
+3. Releases RST HIGH (inactive)
+4. Waits for device to initialize (~1 ms for clock setup)
 
 ---
 
-## 5. Platform Abstraction Layer Implementation
+## Platform abstraction layer implementation
 
-### 5.1 Required Functions
+### Required functions
 
 Create a new source file (e.g., `xensiv_bgt60cutrxx_platform_arduino.cpp`) implementing all platform functions.
 
-### 5.2 Function Specifications
+### Function specifications
 
-#### 5.2.1 Delay Functions
+#### Delay functions
 
 ```c
 /**
@@ -448,11 +475,11 @@ void xensiv_bgt60cutrxx_platform_delay(uint32_t ms);
 void xensiv_bgt60cutrxx_platform_delay_us(uint32_t us);
 ```
 
-#### 5.2.2 GPIO Control Functions
+#### GPIO control functions
 
 ```c
 /**
- * @brief Control reset pin
+ * @brief Controls reset pin
  * @param iface Platform interface pointer (cast to your interface struct)
  * @param val   true = HIGH (inactive), false = LOW (active reset)
  *
@@ -463,7 +490,7 @@ void xensiv_bgt60cutrxx_platform_delay_us(uint32_t us);
 void xensiv_bgt60cutrxx_platform_rst_set(const void* iface, bool val);
 
 /**
- * @brief Control SPI chip select pin
+ * @brief Controls SPI Chip Select (CS) pin
  * @param iface Platform interface pointer
  * @param val   true = HIGH (inactive), false = LOW (active/selected)
  *
@@ -475,14 +502,14 @@ void xensiv_bgt60cutrxx_platform_rst_set(const void* iface, bool val);
 void xensiv_bgt60cutrxx_platform_spi_cs_set(const void* iface, bool val);
 ```
 
-#### 5.2.3 SPI Transfer Functions
+#### SPI transfer functions
 
 ```c
 /**
  * @brief 16-bit SPI transfer
  * @param iface Platform interface pointer
- * @param txd   Transmit buffer (can be NULL for read-only)
- * @param rxd   Receive buffer (can be NULL for write-only)
+ * @param txd   Transmits buffer (can be NULL for read-only)
+ * @param rxd   Receives buffer (can be NULL for write-only)
  * @param len   Number of 16-bit words to transfer
  * @return 0 on success, non-zero on error
  *
@@ -497,7 +524,7 @@ int32_t xensiv_bgt60cutrxx_platform_spi_transfer16(void* iface,
     const uint16_t* txd, uint16_t* rxd, uint32_t len);
 
 /**
- * @brief Block read via SPI
+ * @brief Blocks read via SPI
  * @param iface Platform interface pointer
  * @param txd   Command buffer (2 words: address)
  * @param rxd   Receive buffer for data
@@ -513,7 +540,7 @@ int32_t xensiv_bgt60cutrxx_platform_spi_read_block(void* iface,
     const uint16_t* txd, uint16_t* rxd, uint32_t len);
 ```
 
-#### 5.2.4 Assert Function
+#### Assert function
 
 ```c
 /**
@@ -528,42 +555,47 @@ void xensiv_bgt60cutrxx_platform_assert(bool expr);
 ```
 
 
-## 6. XMC1400 Arduino Porting Example
-This section first showcases how platform dependent code is glued to the required interfaces of software driver. Once this is done as shown in section 6.3, section 6.4 shows the porting of <b>motion detection</b> code example that utilizes on-chip capabilities of radar sensor. The code example demonstrates how to consume interfaces provided by the software driver to detect sensor on the bus, configure it for given use-case, start sampling data etc.
+## XMC1400 Arduino porting example
 
-### 6.1 Hardware Setup
+This section demonstrates how platform-dependent code is integrated with the required software driver interfaces. After  [Platform implementation files](#platform-implementation-files) integration, [Motion detection application](#motion-detection-application) shows the porting of the <b>motion detection</b> code example that utilizes on-chip capabilities of radar sensor. The code example shows how to use the software driver interfaces to detect the sensor on the bus, configure it for a given use case, and initiate data sampling.
 
-**Board Information:**
-- **MCU:** XMC1402 (Arm® Cortex®-M0, 48 MHz)
-- **Development Environment:** Arduino IDE with XMC-for-Arduino Core
-- **Reference:** [KIT_XMC1400_ARDUINO Product Page](https://www.infineon.com/cms/en/product/evaluation-boards/kit_xmc1400_arduino/)
+### Hardware setup
 
-> ⚠️ **IMPORTANT ERRATA:** On the KIT_XMC1400_ARDUINO, pins `P1.4` and `P0.5` are swapped on the board and are not consistent with the silkscreen. As a result, interrupt 0 `INT0` occurs as Arduino pin `25` and interrupt 1 `INT1` is located at Arduino pin `3`. Refer to the [XMC-for-Arduino documentation](https://xmc-arduino.readthedocs.io/en/latest/hw-platforms.html) for the correct pinout diagram.
+**Board information:**
+- **MCU:** XMC1402 (Arm&reg; Cortex&reg;-M0, 48 MHz)
+- **Development environment:** Arduino IDE with XMC-for-Arduino Core
+- **Reference:** [KIT_XMC1400_ARDUINO](https://www.infineon.com/evaluation-board/KIT-XMC1400-ARDUINO)
 
-### 6.2 Pin Mapping
+> ⚠️ **Important Errata:** On the KIT_XMC1400_ARDUINO, pins `P1.4` and `P0.5` are swapped on the board and are not consistent with the silkscreen. As a result, interrupt 0 `INT0` occurs as Arduino pin `25` and interrupt 1 `INT1` is located at Arduino pin `3`. See the [XMC-for-Arduino documentation](https://xmc-arduino.readthedocs.io/en/latest/hw-platforms.html) for the correct pinout diagram.
 
-Based on the XENSIV Radar Shield and XMC1400 Arduino Kit routing:
+### Pin mapping
 
-| Signal | Arduino Pin | XMC1400 Pin | Function | Notes |
-|--------|-------------|-------------|----------|-------|
-| SPI_MOSI | D11 | P0.1 | SPI Master Out | |
-| SPI_MISO | D12 | P0.0 | SPI Master In | |
-| SPI_CLK | D13 | P0.3 | SPI Clock | |
-| SPI_CS | D10 | P0.4 | Chip Select | Software controlled |
-| RSTN | D2 | P1.4→P0.5* | Reset | *See errata |
-| IRQ | A1 | P2.8 | Interrupt | Rising edge, externally routed to D3 (P1.1)|
-| RS_SEL | D6 | P0.6 | Radar Select | Set HIGH |
-| SPI_CS_SEL0 | D9 | P0.7 | CS Mux Select | Set LOW |
-| DIO2 | D5 | P0.2 | Bootloader Disable | Set HIGH |
+Based on the XENSIV&trade; Radar Shield and XMC1400 Arduino Kit routing:
 
-### 6.3 Platform Implementation Files
+**Table 7. Pin mapping**
+
+Signal | Arduino pin | XMC1400 pin | Function | Notes
+--------|-------------|-------------|----------|-------
+SPI_MOSI | D11 | P0.1 | SPI Master Out | -
+SPI_MISO | D12 | P0.0 | SPI Master In | -
+SPI_CLK | D13 | P0.3 | SPI Clock | -
+SPI_CS | D10 | P0.4 | Chip Select | Software controlled |
+RSTN | D2 | P1.4→P0.5* | Reset | *See errata 
+IRQ | A1 | P2.8 | Interrupt | Rising edge, externally routed to D3 (P1.1)|
+RS_SEL | D6 | P0.6 | Radar Select | Set HIGH 
+SPI_CS_SEL0 | D9 | P0.7 | CS Mux Select | Set LOW
+DIO2 | D5 | P0.2 | Bootloader Disable | Set HIGH
+
+<br>
+
+### Platform implementation files {#platform-implementation-files}
 
 #### File: `xensiv_bgt60cutrxx_platform_arduino.h`
 
 ```cpp
 /**
  * @file xensiv_bgt60cutrxx_platform_arduino.h
- * @brief BGT60CUTRXX driver port for XMC1400 Arduino Kit
+ * @brief BGT60CUTRxx driver port for XMC1400 Arduino Kit
  */
 
 #ifndef XENSIV_BGT60CUTRXX_PLATFORM_ARDUINO_H_
@@ -583,12 +615,12 @@ Based on the XENSIV Radar Shield and XMC1400 Arduino Kit routing:
 #define PIN_XENSIV_BGT60CUTRXX_RSTN       2    // D2 - P0.5 (Note: P1.4 swapped with P0.5)
 
 // Shield Control Pins
-#define PIN_RS_SEL                        6    // D6 - P0.6 (Radar Sensor Select)
-#define PIN_SHIELD_XENSIV_A_SPI_CS_SEL0   9    // D9 - P0.7 (SPI CS Multiplexer)
-#define PIN_SHIELD_XENSIV_A_DIO2          5    // D5 - P0.2 (Bootloader Disable)
+#define PIN_RS_SEL                        6    // D6 - P0.6 (Radar sensor select)
+#define PIN_SHIELD_XENSIV_A_SPI_CS_SEL0   9    // D9 - P0.7 (SPI CS multiplexer)
+#define PIN_SHIELD_XENSIV_A_DIO2          5    // D5 - P0.2 (Bootloader disable)
 
 // SPI Configuration
-#define SPI_FREQUENCY_HZ                  4000000UL // 4Mhz SPI clock
+#define SPI_FREQUENCY_HZ                  4000000UL // 4 MHz SPI clock
 
 extern "C" {
 #include <xensiv_bgt60cutrxx.h>
@@ -620,15 +652,15 @@ typedef struct {
 } xensiv_bgt60cutrxx_arduino_t;
 
 /**
- * @brief Initialize shield-specific GPIO pins
+ * @brief Initializes shield-specific GPIO pins
  * @return 0 on success, -1 on failure
  */
 int32_t xensiv_bgt60cutrxx_shield_init(void);
 
 /**
- * @brief Initialize radar sensor on Arduino platform
- * @param radar Pointer to radar device structure
- * @param register_list Pointer to register configuration array
+ * @brief Initializes radar sensor on Arduino platform
+ * @param radar Pointers to radar device structure
+ * @param register_list Pointers to register configuration array
  * @param register_list_len Number of register entries
  * @return 0 on success, error code on failure
  */
@@ -645,7 +677,7 @@ int32_t xensiv_bgt60cutrxx_arduino_init(
 ```cpp
 /**
  * @file xensiv_bgt60cutrxx_platform_arduino.cpp
- * @brief BGT60CUTRXX driver port for XMC1400 Arduino Kit
+ * @brief BGT60CUTRxx driver port for XMC1400 Arduino Kit
  */
 
 #include "xensiv_bgt60cutrxx_platform_arduino.h"
@@ -656,7 +688,7 @@ int32_t xensiv_bgt60cutrxx_arduino_init(
 #endif
 
 /* ============================================================================
- * Platform Function Implementations
+ * Platform function implementations
  * ============================================================================ */
 
 extern "C" {
@@ -690,7 +722,7 @@ void xensiv_bgt60cutrxx_platform_spi_cs_set(const void* iface, bool val)
 int32_t xensiv_bgt60cutrxx_platform_spi_transfer16(void* iface,
     const uint16_t* txd, uint16_t* rxd, uint32_t len)
 {
-    (void)iface;  // Interface not needed for Arduino SPI
+    (void)iface;  // Interfaces not needed for Arduino SPI
 
     for (uint32_t i = 0; i < len; i++)
     {
@@ -716,12 +748,12 @@ int32_t xensiv_bgt60cutrxx_platform_spi_read_block(void* iface,
 {
     int32_t result;
 
-    // Send 2-word read command
+    // Sends 2-word read command
     result = xensiv_bgt60cutrxx_platform_spi_transfer16(iface, txd, NULL, 2);
 
     if (result == XENSIV_BGT60CUTRXX_STATUS_OK)
     {
-        // Read data words
+        // Reads data words
         result = xensiv_bgt60cutrxx_platform_spi_transfer16(iface, NULL, rxd, len);
     }
 
@@ -733,29 +765,29 @@ void xensiv_bgt60cutrxx_platform_assert(bool expr)
     if (!expr)
     {
         Serial.println("ASSERTION FAILED!");
-        while (1) { }  // Halt
+        while (1) { }  // Halts
     }
 }
 
 } // extern "C"
 
 /* ============================================================================
- * Arduino-Specific Initialization Functions
+ * Arduino-specific initialization functions
  * ============================================================================ */
 
 int32_t xensiv_bgt60cutrxx_shield_init(void)
 {
-    // Initialize shield control pins
+    // Initializes shield control pins
 
-    // RS_SEL: Select BGT60CUTRXX as active radar sensor (HIGH)
+    // RS_SEL: Selects BGT60CUTRxx as active radar sensor (HIGH)
     pinMode(PIN_RS_SEL, OUTPUT);
     digitalWrite(PIN_RS_SEL, HIGH);
 
-    // SPI_CS_SEL0: Configure CS multiplexer (LOW for BGT60CUTRXX)
+    // SPI_CS_SEL0: Configures CS multiplexer (LOW for BGT60CUTRxx)
     pinMode(PIN_SHIELD_XENSIV_A_SPI_CS_SEL0, OUTPUT);
     digitalWrite(PIN_SHIELD_XENSIV_A_SPI_CS_SEL0, LOW);
 
-    // DIO2: Disable bootloader mode (HIGH)
+    // DIO2: Disables bootloader mode (HIGH)
     // Note: DIO3 is connected to RSTN pin, so it will be set HIGH during reset release
     pinMode(PIN_SHIELD_XENSIV_A_DIO2, OUTPUT);
     digitalWrite(PIN_SHIELD_XENSIV_A_DIO2, HIGH);
@@ -770,35 +802,35 @@ int32_t xensiv_bgt60cutrxx_arduino_init(
 {
     int32_t result;
 
-    // Store pin configuration
+    // Stores pin configuration
     radar->iface.cs_pin = PIN_XENSIV_BGT60CUTRXX_SPI_CSN;
     radar->iface.rst_pin = PIN_XENSIV_BGT60CUTRXX_RSTN;
     radar->iface.irq_pin = PIN_XENSIV_BGT60CUTRXX_IRQ;
 
-    // Initialize GPIO pins
+    // Initializes GPIO pins
     pinMode(radar->iface.cs_pin, OUTPUT);
     pinMode(radar->iface.rst_pin, OUTPUT);
     pinMode(radar->iface.irq_pin, INPUT_PULLDOWN);
 
-    // Set initial states
+    // Sets initial states
     digitalWrite(radar->iface.cs_pin, HIGH);   // CS inactive
     digitalWrite(radar->iface.rst_pin, HIGH);  // RST inactive
 
-    // Initialize shield-specific pins
+    // Initializes shield-specific pins
     result = xensiv_bgt60cutrxx_shield_init();
     if (result != XENSIV_BGT60CUTRXX_STATUS_OK)
     {
         return result;
     }
 
-    // Initialize SPI
+    // Initializes SPI
     SPISettings radarSPISettings(SPI_FREQUENCY_HZ, LSBFIRST, SPI_MODE0);
     SPI.beginTransaction(radarSPISettings);
 
 
 
-    // Initialize radar driver
-    // 80MHz crystal, 1.8V IO level (typical for XENSIV shield)
+    // Initializes radar driver
+    // 80 MHz crystal, 1.8 V I/O level (typical for XENSIV(TM) shield)
     result = xensiv_bgt60cutrxx_init(
         &radar->dev,
         &radar->iface,
@@ -812,7 +844,7 @@ int32_t xensiv_bgt60cutrxx_arduino_init(
         return result;
     }
 
-    // Detect device
+    // Detects device
     result = xensiv_bgt60cutrxx_detect_device(&radar->dev);
     if (result != XENSIV_BGT60CUTRXX_STATUS_OK)
     {
@@ -823,7 +855,7 @@ int32_t xensiv_bgt60cutrxx_arduino_init(
     Serial.print("Radar HW ID: 0x");
     Serial.println(radar->dev.device_id, HEX);
 
-    // Load configuration
+    // Loads configuration
     result = xensiv_bgt60cutrxx_config(&radar->dev, register_list, register_list_len);
     if (result != XENSIV_BGT60CUTRXX_STATUS_OK)
     {
@@ -831,10 +863,10 @@ int32_t xensiv_bgt60cutrxx_arduino_init(
         return result;
     }
 
-    // Wait for configuration to settle
+    // Waits for configuration to settle
     delay(50);
 
-    // Perform ADC calibration
+    // Performs ADC calibration
     result = xensiv_bgt60cutrxx_perform_adc_calibration(&radar->dev);
     if (result != XENSIV_BGT60CUTRXX_STATUS_OK)
     {
@@ -847,16 +879,16 @@ int32_t xensiv_bgt60cutrxx_arduino_init(
 }
 ```
 
-### 6.4 Motion Detection Application
+### Motion detection application {#motion-detection-application}
 
 #### File: `radar_motion_detection.ino`
 
 ```cpp
 /**
  * @file radar_motion_detection.ino
- * @brief Motion detection example for XMC1400 Arduino Kit with BGT60CUTRXX
+ * @brief Motion detection example for XMC1400 Arduino Kit with BGT60CUTRxx
  *
- * This example demonstrates radar motion detection using the XENSIV BGT60CUTRXX
+ * This example demonstrates radar motion detection using the XENSIV(TM) BGT60CUTRxx
  * sensor on the KIT_XMC1400_ARDUINO evaluation board.
  */
 
@@ -867,10 +899,10 @@ int32_t xensiv_bgt60cutrxx_arduino_init(
 #include <SPI.h>
 #include "xensiv_bgt60cutrxx_platform_arduino.h"
 
-// Include radar configuration header (from radar_config folder)
+// Includes radar configuration header (from radar_config folder)
 #include "radar_config/indoor_motion_low_power.h"
 
-// Include motion detection library
+// Includes motion detection library
 extern "C" {
 #include "motion_detector/radar_motion_detection.h"
 }
@@ -884,7 +916,7 @@ extern "C" {
 
 
 /* ============================================================================
- * Global Variables
+ * Global variables
  * ============================================================================ */
 
 // Radar sensor object
@@ -900,14 +932,14 @@ static uint32_t rd_data_buffer[BGT60CUTR13_RD_DATABUFFER_MAX_SIZE];
 static uint32_t rd_data_buffer[1];  // Minimal buffer
 #endif
 
-// Interrupt flag
+// Interrupts flag
 static volatile bool radar_event_irq = true;
 
 // Detection counter
 static uint32_t detection_counter = 0;
 
 /* ============================================================================
- * Interrupt Handler
+ * Interrupt handler
  * ============================================================================ */
 
 void radar_irq_handler(void)
@@ -917,15 +949,15 @@ void radar_irq_handler(void)
 }
 
 /* ============================================================================
- * Helper Functions
- * This function is used to print detections in JSON based format to support Infineon XENSIV radar cmos visualization tool.
- Please visit: https://www.infineon.com/design-resources/development-tools
+ * Helper functions
+ * Prints detections in JSON-based format to support the Infineon XENSIV(TM) radar CMOS visualization tool.
+ See: https://www.infineon.com/design-resources/development-tools
  ============================================================================
  */
 
 void print_detections(motion_detection_t* motion_detection, uint32_t counter)
 {
-    // Use a slightly larger buffer to be safe, and initialize to zero
+    // Uses a slightly larger buffer to be safe and initialize to zero
     static char buffer[256];
     static char f1[16], f2[16], f3[16], f4[16], f5[16], f6[16];
     uint16_t type = 0;
@@ -949,7 +981,7 @@ void print_detections(motion_detection_t* motion_detection, uint32_t counter)
 
     for (uint8_t i = 0; i < BGT60CUTR13_PROCESSED_MD_TARGET_MAX; i++)
     {
-        if ((motion_detection->processed_targets[i].antenna_rx > 0.0f) ||
+        if ((motion_detection->processed_targets[i].antenna_rx > 0) ||
             ((i == (BGT60CUTR13_PROCESSED_MD_TARGET_MAX - 1)) && !target_detected))
         {
             if (target_detected)
@@ -958,18 +990,17 @@ void print_detections(motion_detection_t* motion_detection, uint32_t counter)
             }
             target_detected = true;
 
-            // Convert floats safely
+            // Converts floats safely
             dtostrf(motion_detection->processed_targets[i].range_m, 1, 2, f1);
             dtostrf(motion_detection->processed_targets[i].azimuth_deg, 1, 2, f2);
             dtostrf(motion_detection->processed_targets[i].elevation_deg, 1, 2, f3);
             dtostrf(motion_detection->processed_targets[i].magnitude_dBFS, 1, 2, f4);
             dtostrf(motion_detection->processed_targets[i].velocity_mps, 1, 2, f5);
-            dtostrf(motion_detection->processed_targets[i].antenna_rx, 1, 2, f6);
-
-            // Clear buffer before each target print
+            // Clears buffer before each target print
             memset(buffer, 0, sizeof(buffer));
-            len = snprintf(buffer, sizeof(buffer) - 1, "[%s, %s, %s, %s, %s, %s, %d, %d, %d, %d, %d, %d, %" PRIu32 "]",
-                   f1, f2, f3, f4, f5, f6,
+            len = snprintf(buffer, sizeof(buffer) - 1, "[%s, %s, %s, %s, %s, %d, %d, %d, %d, %d, %d, %d, %" PRIu32 "]",
+                   f1, f2, f3, f4, f5,
+                   (int)motion_detection->processed_targets[i].antenna_rx,
                    (int)motion_detection->range_bin[i],
                    (int)motion_detection->doppler_bin[i],
                    (int)motion_detection->sequence,
@@ -998,29 +1029,29 @@ void setup()
     int32_t result;
 
     //Register external interrupt first
-    /* Note: For XMC1400 Arduino, A1 pin is not designated as INTR pin. Therefore this   example expects pin A1 to be externally connected to pin #3 (P1.1), where INTR is registered. For other Arduino platforms where A1, can be directly used as INTR, this is however not needed*/
+    /* Note: For XMC1400 Arduino, the A1 pin is not designated as an INTR pin. Therefore, this example expects pin A1 to be externally connected to pin #3 (P1.1), where INTR is registered. For other Arduino platforms, where A1 can be directly used as INTR, this is however not needed.*/
     attachInterrupt(
         digitalPinToInterrupt(PIN_XENSIV_BGT60CUTRXX_IRQ),
         radar_irq_handler,
         RISING
     );
 
-    // Initialize serial communication
+    // Initializes serial communication
     Serial.begin(SERIAL_BAUDRATE);
 
     while (!Serial) { }  // Wait for serial port
 
-    delay(1000);  // Allow time for serial monitor to connect
+    delay(1000);  // Allows time for serial monitor to connect
 
-    // Print banner
+    // Prints banner
     Serial.println();
     Serial.println("========================================");
-    Serial.println("XENSIV BGT60CUTRXX Motion Detection");
+    Serial.println("XENSIV BGT60CUTRxx Motion Detection");
     Serial.println("XMC1400 Arduino Kit Example");
     Serial.println("========================================");
     Serial.println();
 
-    // Initialize radar sensor
+    // Initializes radar sensor
     Serial.println("Initializing radar sensor...");
 
     result = xensiv_bgt60cutrxx_arduino_init(
@@ -1033,12 +1064,12 @@ void setup()
     {
         Serial.print("ERROR: Radar initialization failed with code: ");
         Serial.println(result);
-        while (1) { }  // Halt
+        while (1) { }  // Halts
     }
 
     Serial.println("Radar sensor initialized successfully");
 
-    // Initialize motion detection
+    // Initializes motion detection
     Serial.println("Initializing motion detection...");
 
 #if MD_RD_ENABLED
@@ -1075,13 +1106,13 @@ void setup()
     {
         Serial.print("ERROR: Motion detection init failed with code: ");
         Serial.println(result);
-        while (1) { }  // Halt
+        while (1) { }  // Halts
     }
 
     Serial.println("Motion detection initialized successfully");
 
 
-    // Clear any pending interrupts
+    // Clears any pending interrupts
     radar_event_irq = false;
     uint32_t irq_status = 0;
     xensiv_bgt60cutrxx_get_irq_status(&radar_sensor.dev, &irq_status);
@@ -1103,20 +1134,20 @@ void setup()
 }
 
 /* ============================================================================
- * Main Loop
+ * Main loop
  * ============================================================================ */
 
 void loop()
 {
 
-    //monitor the IRQ
+    //Monitors the IRQ
     if (radar_event_irq){
 
         radar_event_irq = false;
-        // Process radar data
+        // Processes radar data
         radar_motion_detection_process(&motion_detection);
 
-        // Print detection results
+        // Prints detection results
         print_detections(&motion_detection, detection_counter);
 
         detection_counter++;
@@ -1129,9 +1160,9 @@ void loop()
 ```
 ---
 
-## 7. Build and Run Instructions
+## Build and run instructions
 
-### 7.1 Arduino IDE Setup
+### Arduino IDE setup
 
 #### Prerequisites
 
@@ -1158,14 +1189,14 @@ void loop()
    - Go to **Tools** → **Board** → **Boards Manager**
    - Search for "XMC" and install "XMC Family"
 
-5. **Prepare & Add BGT60CUTRXX SW Driver as Arduino Library**
-   - Locate the BGT60CUTRXX SW Driver folder on your system
+5. **Prepare and add BGT60CUTRxx software driver as Arduino Library**
+   - Locate the BGT60CUTRxx software driver folder on your system
    - Organize it with the required structure:
      ```
      sensor-xensiv-bgt60cutrxx/
      ├── library.properties
      └── src/
-         ├── xensiv_bgt60cutrxx.h      # From SW driver library package
+         ├── xensiv_bgt60cutrxx.h      # From software driver library package
          ├── xensiv_bgt60cutrxx.c
          ├── xensiv_bgt60cutrxx_regs.h
          ├── xensiv_bgt60cutrxx_platform.h
@@ -1192,7 +1223,7 @@ void loop()
        > **Note**: File  <b>xensiv_bgt60cutrxxb_register_hal.h</b> is moved from directory <b>register_hal</b> to <b>src</b> directory.
    - Create `library.properties` in the root of the folder:
      ```ini
-     name=Sensor XENSIV BGT60CUTRXX
+     name=Sensor XENSIV BGT60CUTRxx
      version=1.0.0
      author=Infineon
      maintainer=Infineon
@@ -1200,8 +1231,8 @@ void loop()
      category=Sensors
      url=https://github.com/Infineon
      architectures=xmc
-     sentence=SW Driver for BGT60CUTRXX radar sensor
-     paragraph=Provides driver support for BGT60CUTRXX radar sensor family
+     sentence=SW Driver for BGT60CUTRxx radar sensor
+     paragraph=Provides driver support for BGT60CUTRxx radar sensor family
 
      ```
    - Copy the `sensor-xensiv-bgt60cutrxx/` folder to:
@@ -1211,11 +1242,11 @@ void loop()
    - Restart Arduino IDE
    - Verify it appears under **Sketch** → **Include Library** → **Contributed Libraries**
 
-6. **Select Board**
+6. **Select board**
    - Go to **Tools** → **Board** → **XMC Family**
    - Select **KIT_XMC1400_ARDUINO**
 
-### 7.2 Project Structure
+### Project structure
 
 Create the following folder structure in your Arduino sketch folder:
 
@@ -1227,36 +1258,36 @@ radar_motion_detection/
 ├── radar_config/
 │   └── indoor_motion_low_power.h               # Radar configuration
 ```
-**Note:** `indoor_motion_low_power.h` is a generated radar sensor configuration file provided as part of the motion detection code example in the Infineon ModusToolbox release.
+> **Note:** `indoor_motion_low_power.h` is a generated radar sensor configuration file provided as part of the motion detection code example in the Infineon ModusToolbox&trade; release.
 
-### 7.3 Building and Uploading
+### Building and uploading
 
-1. **Connect Hardware**
-   - Connect the XENSIV Radar Shield to the KIT_XMC1400_ARDUINO
+1. **Connect hardware**
+   - Connect the XENSIV&trade; Radar Shield to the KIT_XMC1400_ARDUINO
    - Connect the board to your PC via USB
 
-2. **Select Port**
+2. **Select port**
    - Go to **Tools** → **Port**
    - Select the COM port for your XMC1400 board
 
 3. **Compile**
    - Click the **Verify** button (checkmark) or press `Ctrl+R`
-   - Verify compilation completes without errors
+   - Verify that compilation completes without errors
 
 4. **Upload**
    - Click the **Upload** button (arrow) or press `Ctrl+U`
    - Wait for upload to complete
 
-5. **Monitor Output**
+5. **Monitor output**
    - Open **Tools** → **Serial Monitor**
    - Set baud rate to **115200**
    - Observe motion detection output
 
 ---
 
-## 8. Testing and Validation
+## Testing and validation
 
-### 8.1 Basic Connectivity Test
+### Basic connectivity test
 
 ```cpp
 int32_t test_radar_connectivity(xensiv_bgt60cutrxx_t* dev)
@@ -1264,7 +1295,7 @@ int32_t test_radar_connectivity(xensiv_bgt60cutrxx_t* dev)
     uint32_t spi_ctrl;
     int32_t status;
 
-    // Read SPI_CTRL register - should return reset value
+    // Reads SPI_CTRL register, should return reset value
     status = xensiv_bgt60cutrxx_get_reg(dev, BGT60CUTR13B_REG_SPI_CTRL, &spi_ctrl);
 
     if (status != XENSIV_BGT60CUTRXX_STATUS_OK)
@@ -1281,7 +1312,7 @@ int32_t test_radar_connectivity(xensiv_bgt60cutrxx_t* dev)
 }
 ```
 
-### 8.2 Device ID Verification
+### Device ID verification
 
 ```cpp
 int32_t test_device_id(xensiv_bgt60cutrxx_t* dev)
@@ -1305,7 +1336,7 @@ int32_t test_device_id(xensiv_bgt60cutrxx_t* dev)
 }
 ```
 
-### 8.3 ADC Calibration Test
+### ADC calibration test
 
 ```cpp
 int32_t test_adc_calibration(xensiv_bgt60cutrxx_t* dev)
@@ -1330,44 +1361,48 @@ int32_t test_adc_calibration(xensiv_bgt60cutrxx_t* dev)
 
 ---
 
-## 9. Troubleshooting
+## Troubleshooting
 
-### 9.1 Common Issues and Solutions
+### Common issues and solutions
 
-| Issue | Possible Cause | Solution |
-|-------|----------------|----------|
-| **Device not detected** | SPI wiring incorrect | Verify MOSI, MISO, CLK, CS connections |
-| **Wrong HW ID** | SPI mode incorrect | Ensure Mode 0, LSB first, 16-bit |
-| **ADC calibration fails** | Configuration not loaded | Load register config before calibration |
-| **No interrupts** | IRQ pin not configured | Check IRQ pin and interrupt setup |
-| **Garbled serial output** | Baud rate mismatch | Verify serial monitor baud rate |
-| **Upload fails** | J-Link not installed | Install SEGGER J-Link software |
+**Table 8. Troubleshooting**
 
-### 9.2 Debug Checklist
+Issue | Possible cause | Solution
+-------|----------------|----------
+**Device not detected** | SPI wiring incorrect | Verify MOSI, MISO, CLK, CS connections
+**Wrong HW ID** | SPI mode incorrect | Ensure Mode 0, LSB first, 16-bit
+**ADC calibration fails** | Configuration not loaded | Load register config before calibration
+**No interrupts** | IRQ pin not configured | Check IRQ pin and interrupt setup
+**Garbled serial output** | Baud rate mismatch | Verify serial monitor baud rate
+**Upload fails** | J-Link not installed | Install SEGGER J-Link software
 
-1. **SPI Communication**
+<br>
+
+### Debug checklist
+
+1. **SPI communication**
    - [ ] SPI Mode 0 (CPOL=0, CPHA=0)
    - [ ] LSB first bit order
    - [ ] 16-bit data width
    - [ ] CS manually controlled (not automatic)
    - [ ] Clock speed ≤ 25 MHz
 
-2. **GPIO Configuration**
+2. **GPIO configuration**
    - [ ] CS pin configured as output, initially HIGH
    - [ ] RST pin configured as output, initially HIGH
    - [ ] IRQ pin configured as input
    - [ ] Shield control pins (RS_SEL, CS_SEL0, DIO2) set correctly
 
-3. **Power Supply**
+3. **Power supply**
    - [ ] VDD connected and stable
    - [ ] GND connected
    - [ ] IO voltage level matches configuration
 
-4. **Reset Sequence**
+4. **Reset sequence**
    - [ ] RST held LOW for ≥5ms
    - [ ] Wait after RST release for device initialization
 
-### 9.3 Enabling Debug Output
+### Enabling debug output
 
 Add the following define before including driver headers to enable debug prints:
 
@@ -1378,26 +1413,26 @@ Add the following define before including driver headers to enable debug prints:
 
 ---
 
-## 10. References
+## References
 
-### 10.1 Documentation
+### Documentation
 
-- [XENSIV BGT60CUTRXX Datasheet](https://www.infineon.com/cms/en/product/sensor/radar-sensors/radar-sensors-for-iot/60ghz-radar/)
-- [KIT_XMC1400_ARDUINO Product Page](https://www.infineon.com/cms/en/product/evaluation-boards/kit_xmc1400_arduino/)
+- [XENSIV&trade; BGT60CUTRxx datasheet](https://www.infineon.com/products/sensor/radar-sensors/radar-sensors-for-iot/60ghz-radar)
+- [KIT_XMC1400_ARDUINO](https://www.infineon.com/evaluation-board/KIT-XMC1400-ARDUINO)
 - [XMC-for-Arduino Documentation](https://xmc-arduino.readthedocs.io/en/latest/)
 - [XMC-for-Arduino GitHub Repository](https://github.com/Infineon/XMC-for-Arduino)
 
-### 10.2 Related Software
+### Related-software
 
 - [Arduino IDE](https://www.arduino.cc/en/software)
 - [SEGGER J-Link Software](https://www.segger.com/downloads/jlink/)
-- [ModusToolbox™](https://www.infineon.com/modustoolbox) (Reference implementation platform)
+- [ModusToolbox&trade](https://www.infineon.com/modustoolbox) (Reference implementation platform)
 
 ---
 
-## Appendix A: Register Configuration Example
+## Appendix A: Register configuration example
 
-The radar configuration is typically generated using Infineon's radar configuration tools. Here's a minimal example structure:
+The radar configuration is typically generated using Infineon radar configuration tools and a minimal example structure as follows:
 
 ```c
 // radar_config/indoor_motion_low_power.h
@@ -1413,7 +1448,7 @@ The radar configuration is typically generated using Infineon's radar configurat
 #define RD_RANGE_RESOLUTION_M   0.15f
 #define RD_VELOCITY_GRID_MPS    {-2.0f, -1.0f, 0.0f, 1.0f, 2.0f}
 
-// Ultra-Low Power sequence settings
+// Ultra-low power sequence settings
 #define ULP_RANGE_RESOLUTION_M  0.30f
 #define ULP_VELOCITY_GRID_MPS   {-1.0f, 0.0f, 1.0f}
 
@@ -1424,7 +1459,7 @@ static const uint32_t register_list[][2] = {
     {0x0004, 0x0000010B},  // CLK_FD for 80MHz
     {0x0008, 0x40002222},  // CLK_WUC
 
-    // IO configuration
+    // I/O configuration
     {0x000C, 0x00000001},  // IO_CTRL - 1.8V IO level
 
     // Sequence configuration
@@ -1439,32 +1474,44 @@ static const uint32_t register_list[][2] = {
 
 ---
 
-## Appendix B: Quick Start Checklist
+## Appendix B: Quick start checklist
 
 - [ ] Install Arduino IDE 2.0+
 - [ ] Install SEGGER J-Link software
 - [ ] Install Python 3.x with pyserial
 - [ ] Add XMC-for-Arduino board URL to Arduino IDE
-- [ ] Install XMC Family board package
-- [ ] Connect XENSIV Radar Shield to KIT_XMC1400_ARDUINO
+- [ ] Install XMC&trade; family board package
+- [ ] Connect XENSIV&trade; Radar Shield to KIT_XMC1400_ARDUINO
 - [ ] Connect USB cable to PC
 - [ ] Select KIT_XMC1400_ARDUINO board in Arduino IDE
-- [ ] Select correct COM port
+- [ ] Select the correct COM port
 - [ ] Copy driver files to sketch folder
 - [ ] Create platform implementation files
 - [ ] Compile and upload sketch
 - [ ] Open Serial Monitor at 115200 baud
 - [ ] Verify "Radar sensor initialized successfully" message
-- [ ] Test motion detection by moving in front of sensor
+- [ ] Test motion detection by moving in front of a sensor
 
 ---
 
-**Document Revision History**
+**Revision history**
 
-| Version | Date | Author | Changes |
-|---------|------|--------|---------|
-| 1.0 | January 2026 | Infineon Technologies AG | Initial release for XMC1400 Arduino Kit |
+Version | Date | Description of changes
+--------- |------ |--------
+1.0 | January 2026 | Initial release for XMC1400 Arduino Kit
+1.1 | March 2026   | Minor edits
 
----
+<br>
 
-*© 2026 Infineon Technologies AG. All rights reserved.*
+
+All referenced product or service names and trademarks are the property of their respective owners.
+
+PSOC&trade;, formerly known as PSoC&trade;, is a trademark of Infineon Technologies. Any references to PSoC&trade; in this document or others shall be deemed to refer to PSOC&trade;.
+
+---------------------------------------------------------
+
+(c) 2026-2026, Infineon Technologies AG, or an affiliate of Infineon Technologies AG. All rights reserved.
+This software, associated documentation and materials ("Software") is owned by Infineon Technologies AG or one of its affiliates ("Infineon") and is protected by and subject to worldwide patent protection, worldwide copyright laws, and international treaty provisions. Therefore, you may use this Software only as provided in the license agreement accompanying the software package from which you obtained this Software. If no license agreement applies, then any use, reproduction, modification, translation, or compilation of this Software is prohibited without the express written permission of Infineon.
+<br>
+Disclaimer: UNLESS OTHERWISE EXPRESSLY AGREED WITH INFINEON, THIS SOFTWARE IS PROVIDED AS-IS, WITH NO WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, ALL WARRANTIES OF NON-INFRINGEMENT OF THIRD-PARTY RIGHTS AND IMPLIED WARRANTIES SUCH AS WARRANTIES OF FITNESS FOR A SPECIFIC USE/PURPOSE OR MERCHANTABILITY. Infineon reserves the right to make changes to the Software without notice. You are responsible for properly designing, programming, and testing the functionality and safety of your intended application of the Software, as well as complying with any legal requirements related to its use. Infineon does not guarantee that the Software will be free from intrusion, data theft or loss, or other breaches (“Security Breaches”), and Infineon shall have no liability arising out of any Security Breaches. Unless otherwise explicitly approved by Infineon, the Software may not be used in any application where a failure of the Product or any consequences of the use thereof can reasonably be expected to result in personal injury.
+

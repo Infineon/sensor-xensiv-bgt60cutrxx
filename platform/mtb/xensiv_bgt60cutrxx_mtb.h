@@ -1,9 +1,9 @@
 /**
  * @file xensiv_bgt60cutrxx_mtb.h
- * @brief Header file for XENSIV BGT60CUTRXX PSoC interface.
+ * @brief Header file for XENSIV BGT60CUTRxx PSoC interface.
  *
  * This file contains the type definitions and function declarations for interfacing
- * with the XENSIV BGT60CUTRXX radar sensor using PSoC.
+ * with the XENSIV BGT60CUTRxx radar sensor using PSoC.
  */
 
 #ifndef XENSIV_BGT60CUTRXX_MTB_H_
@@ -65,16 +65,16 @@ typedef struct
 
 /**
  * @struct xensiv_bgt60cutrxx_mtb_t
- * @brief Structure to hold the device and interface information for XENSIV BGT60CUTRXX.
+ * @brief Structure to hold the device and interface information for XENSIV BGT60CUTRxx.
  *
  * This structure contains the device instance and the interface instance required
- * to communicate with the XENSIV BGT60CUTRXX radar sensor.
+ * to communicate with the XENSIV BGT60CUTRxx radar sensor.
  *
  * @var xensiv_bgt60cutrxx_mtb_t::dev
- * Device instance for XENSIV BGT60CUTRXX.
+ * Device instance for XENSIV BGT60CUTRxx.
  *
  * @var xensiv_bgt60cutrxx_mtb_t::iface
- * Interface instance for XENSIV BGT60CUTRXX.
+ * Interface instance for XENSIV BGT60CUTRxx.
  */
 typedef struct
 {
@@ -98,10 +98,10 @@ extern "C" {
 #endif
 
 /**
- * @brief Opens the XENSIV BGT60CUTRXX platform.
+ * @brief Opens the XENSIV BGT60CUTRxx platform.
  *
  * This function initializes the platform-specific GPIO and SPI interfaces
- * required for communication with the XENSIV BGT60CUTRXX sensor.
+ * required for communication with the XENSIV BGT60CUTRxx sensor.
  *
  * @param mcu_iface Pointer to the MCU interface.
  * @param config Pointer to the configuration structure containing pin definitions and settings.
@@ -111,31 +111,35 @@ int32_t xensiv_bgt60cutrxx_platform_open(xensiv_bgt60cutrxx_mtb_iface_t* mcu_ifa
                                          xensiv_bgt60cutrxx_mtb_iface_config_t* config);
 
 /**
- * @brief Initializes the XENSIV BGT60CUTRXX hardware platform.
+ * @brief Initializes the XENSIV BGT60CUTRxx hardware platform.
  *
- * This function initializes the XENSIV BGT60CUTRXX platform by performing necessary setups and configuration that
+ * This function initializes the XENSIV BGT60CUTRxx platform by performing necessary setups and configuration that
  * depend on the used hardware.
  * It enables the LDO, releases the reset pin, initializes the sensor, set the SPI baudrate to
  * XENSIV_BGT60CUTRXX_MAX_SPEED, downloads the register configuration list, and it performs the ADC calibration.
  *
- * @param radar_sensor Pointer to the XENSIV BGT60CUTRXX object.
+ * @param radar_sensor Pointer to the XENSIV BGT60CUTRxx object.
  * @param config Pointer to the configuration structure containing pin definitions and settings.
  * @param register_list pointer to an two dimensional array containing the register address and its value
  * @param register_list_len specifies the number of address and value pairs that should be written to the sensor
+ * @param power_mode select the power mode of the sensor, either active or deep sleep
+ * @param deepsleep_after_calibration flag if deepsleep should be enabled after calibration is done
  * @return Returns 0 on success, or an error code on failure.
  */
 int32_t xensiv_bgt60cutrxx_platform_init(xensiv_bgt60cutrxx_mtb_t* radar_sensor,
                                          xensiv_bgt60cutrxx_mtb_iface_config_t* config,
-                                         const uint32_t register_list[][2], uint32_t register_list_len);
+                                         const uint32_t register_list[][2], uint32_t register_list_len,
+                                         xensiv_bgt60cutrxx_power_mode_t power_mode,
+                                         bool deepsleep_after_calibration);
 
 /**
- * @brief Initializes the platform-specific interrupt for the XENSIV BGT60CUTRXX sensor.
+ * @brief Initializes the platform-specific interrupt for the XENSIV BGT60CUTRxx sensor.
  *
- * This function sets up the interrupt handler for the XENSIV BGT60CUTRXX sensor on the MCU platform.
+ * This function sets up the interrupt handler for the XENSIV BGT60CUTRxx sensor on the MCU platform.
  * The provided callback function will be called when an interrupt occurs, with two parameters: the first parameter
  * represents the interrupt source, and the second parameter represents additional interrupt information.
  *
- * @param radar_sensor Pointer to the XENSIV BGT60CUTRXX object.
+ * @param radar_sensor Pointer to the XENSIV BGT60CUTRxx object.
  * @param config Pointer to the configuration structure containing pin definitions and settings.
  * @param callback A function pointer to the callback function that will be called when an interrupt occurs.
  * @param callback_arg An argument that will be passed to the callback function.
