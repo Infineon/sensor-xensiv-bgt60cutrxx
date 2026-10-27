@@ -393,6 +393,9 @@ int32_t xensiv_bgt60cutrxx_perform_adc_calibration(xensiv_bgt60cutrxx_t* dev)
             DEBUG_PRINT("ADC calibration timeout: ir_stat: 0x%08" PRIX32 "\n\r", ir_stat);
             return XENSIV_BGT60CUTRXX_STATUS_TIMEOUT_ERROR;
         }
+
+        // SEQ3_DONE latches here and would otherwise stay set in IR_STAT for good.
+        status = xensiv_bgt60cutrxx_set_reg(dev, BGT60CUTR13B_REG_IR_CLEAR, BGT60CUTR13B_IR_CLEAR_SEQ3_DONE_MSK);
     }
     //read calibration error, check bits 25-28
     // if error bit is set, then read ADCx_ERRFLAG_STAT
@@ -627,7 +630,8 @@ int32_t xensiv_bgt60cutrxx_get_rd_map(xensiv_bgt60cutrxx_t* dev, uint32_t* rd_da
     const uint16_t temp[REG_READ_CMD_WORDS] = SMARTAR_READ(BGT60CUTR13B_RD_MAP_ADDRESS);
 
     xensiv_bgt60cutrxx_platform_spi_cs_set(dev->iface, CS_ACTIVE);
-    status = xensiv_bgt60cutrxx_platform_spi_read_block(dev->iface, temp, (uint16_t*)rd_data, RX_BUFFER_MAX_SIZE_BYTES);
+    status = xensiv_bgt60cutrxx_platform_spi_read_block(dev->iface, temp, (uint16_t*)rd_data,
+                                                        RX_BUFFER_MAX_SIZE_BYTES / sizeof(uint16_t));
     xensiv_bgt60cutrxx_platform_spi_cs_set(dev->iface, CS_INACTIVE);
 
     return status;

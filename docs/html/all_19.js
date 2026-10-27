@@ -18,9 +18,5 @@ var searchData=
   ['transmission_20diagram_20for_20spi_20register_20read_20operation_15',['Figure 6. Physical transmission diagram for SPI register read operation',['../index.html#autotoc_md16',1,'']]],
   ['transmission_20for_20register_20write_20operation_16',['Figure 5. Physical transmission for register write operation',['../index.html#autotoc_md15',1,'']]],
   ['transmission_20for_20spi_20register_20read_20packet_17',['Figure 7. Physical transmission for SPI register read packet',['../index.html#autotoc_md18',1,'']]],
-  ['troubleshooting_18',['Troubleshooting',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md95',1,'']]],
-  ['tt_19',['tt',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md82',1,'File: &lt;tt&gt;radar_motion_detection.ino&lt;/tt&gt;'],['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md81',1,'File: &lt;tt&gt;xensiv_bgt60cutrxx_platform_arduino.cpp&lt;/tt&gt;'],['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md80',1,'File: &lt;tt&gt;xensiv_bgt60cutrxx_platform_arduino.h&lt;/tt&gt;']]],
-  ['tt_20radar_5fmotion_5fdetection_20ino_20tt_20',['File: &lt;tt&gt;radar_motion_detection.ino&lt;/tt&gt;',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md82',1,'']]],
-  ['tt_20xensiv_5fbgt60cutrxx_5fplatform_5farduino_20cpp_20tt_21',['File: &lt;tt&gt;xensiv_bgt60cutrxx_platform_arduino.cpp&lt;/tt&gt;',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md81',1,'']]],
-  ['tt_20xensiv_5fbgt60cutrxx_5fplatform_5farduino_20h_20tt_22',['File: &lt;tt&gt;xensiv_bgt60cutrxx_platform_arduino.h&lt;/tt&gt;',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md80',1,'']]]
+  ['troubleshooting_18',['Troubleshooting',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md95',1,'']]]
 ];

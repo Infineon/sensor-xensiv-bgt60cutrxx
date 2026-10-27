@@ -1,0 +1,25 @@
+var searchData=
+[
+  ['data_20structure_0',['Main data structure',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md57',1,'']]],
+  ['debug_20checklist_1',['Debug checklist',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md97',1,'']]],
+  ['debug_20output_2',['Enabling debug output',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md98',1,'']]],
+  ['default_20radar_20device_20startup_20register_20configuration_3',['Table 1. Default radar device startup register configuration',['../index.html#autotoc_md9',1,'']]],
+  ['delay_20functions_4',['Delay functions',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md73',1,'']]],
+  ['dependent_20hardware_20abstraction_20layer_20hal_5',['Platform-dependent Hardware Abstraction Layer (HAL)',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md60',1,'']]],
+  ['detection_6',['Motion detection',['../index.html#autotoc_md21',1,'']]],
+  ['detection_20application_7',['Motion detection application',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#motion-detection-application',1,'']]],
+  ['detection_20output_8',['Motion detection output',['../index.html#autotoc_md22',1,'']]],
+  ['device_20id_20verification_9',['Device ID verification',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md92',1,'']]],
+  ['device_20startup_20register_20configuration_10',['Table 1. Default radar device startup register configuration',['../index.html#autotoc_md9',1,'']]],
+  ['diagram_11',['diagram',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md67',1,'BGT60CUTRxx Shield to XMC1400 Arduino Kit connection diagram'],['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md61',1,'Block diagram'],['../index.html#autotoc_md13',1,'Figure 4. SPI write protocol timing diagram'],['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md64',1,'SPI bus timing diagram']]],
+  ['diagram_20for_20continuous_20spi_20memory_20read_20operation_12',['Figure 8. Timing diagram for continuous SPI memory read operation',['../index.html#autotoc_md19',1,'']]],
+  ['diagram_20for_20spi_20register_20read_20operation_13',['Figure 6. Physical transmission diagram for SPI register read operation',['../index.html#autotoc_md16',1,'']]],
+  ['documentation_14',['Documentation',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md101',1,'']]],
+  ['driver_15',['Linux kernel driver',['../index.html#autotoc_md32',1,'']]],
+  ['driver_20architecture_16',['Driver architecture',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md55',1,'']]],
+  ['driver_20architecture_20overview_17',['Driver architecture overview',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md41',1,'']]],
+  ['driver_20functions_18',['BGT60CUTRxx driver functions',['../index.html#autotoc_md4',1,'']]],
+  ['driver_20package_20file_20structure_19',['Driver package file structure',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md42',1,'']]],
+  ['driver_20porting_20guide_20',['XENSIV&amp;trade; BGT60CUTRxx radar sensor driver porting guide',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html',1,'']]],
+  ['driver_20startup_20sequence_21',['Driver startup sequence',['../index.html#autotoc_md8',1,'']]]
+];

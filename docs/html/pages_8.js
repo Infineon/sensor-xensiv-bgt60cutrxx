@@ -1,5 +1,26 @@
 var searchData=
 [
-  ['xensiv_20trade_20bgt60cutrxx_20radar_20sensor_20driver_20porting_20guide_0',['XENSIV&amp;trade; BGT60CUTRxx radar sensor driver porting guide',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html',1,'']]],
-  ['xensiv_20trade_20bgt60cutrxx_20radar_20sensor_20library_1',['XENSIV&amp;trade; BGT60CUTRxx radar sensor library',['../index.html',1,'']]]
+  ['a_3a_20register_20configuration_20example_0',['Appendix A: Register configuration example',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md104',1,'']]],
+  ['abstraction_20layer_20hal_1',['Platform-dependent Hardware Abstraction Layer (HAL)',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md60',1,'']]],
+  ['abstraction_20layer_20implementation_2',['Platform abstraction layer implementation',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md70',1,'']]],
+  ['acquisition_3',['BGT60CUTRxx frame acquisition',['../index.html#autotoc_md31',1,'']]],
+  ['adc_20calibration_20test_4',['ADC calibration test',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md93',1,'']]],
+  ['and_20masking_5',['Clutter localization and masking',['../index.html#autotoc_md29',1,'']]],
+  ['and_20run_20instructions_6',['Build and run instructions',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md84',1,'']]],
+  ['and_20solutions_7',['Common issues and solutions',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md96',1,'']]],
+  ['and_20uploading_8',['Building and uploading',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md88',1,'']]],
+  ['and_20validation_9',['Testing and validation',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md90',1,'']]],
+  ['another_20platform_10',['Using the library with another platform',['../index.html#autotoc_md7',1,'']]],
+  ['api_11',['Power management API',['../index.html#autotoc_md6',1,'']]],
+  ['api_20functions_12',['Core API functions',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md58',1,'']]],
+  ['appendix_20a_3a_20register_20configuration_20example_13',['Appendix A: Register configuration example',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md104',1,'']]],
+  ['appendix_20b_3a_20quick_20start_20checklist_14',['Appendix B: Quick start checklist',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md106',1,'']]],
+  ['application_15',['Motion detection application',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#motion-detection-application',1,'']]],
+  ['architecture_16',['architecture',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md55',1,'Driver architecture'],['../index.html#autotoc_md2',1,'Figure 1. Library architecture']]],
+  ['architecture_20overview_17',['Driver architecture overview',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md41',1,'']]],
+  ['arduino_20ide_20setup_18',['Arduino IDE setup',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md85',1,'']]],
+  ['arduino_20kit_20connection_20diagram_19',['BGT60CUTRxx Shield to XMC1400 Arduino Kit connection diagram',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md67',1,'']]],
+  ['arduino_20kit_20edition_20',['XMC&amp;trade; XMC1400 Arduino Kit edition',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md37',1,'']]],
+  ['arduino_20porting_20example_21',['XMC1400 Arduino porting example',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md77',1,'']]],
+  ['assert_20function_22',['Assert function',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md76',1,'']]]
 ];

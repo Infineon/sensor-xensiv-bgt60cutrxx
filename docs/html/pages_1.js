@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['driver_20porting_20guide_0',['XENSIV&amp;trade; BGT60CUTRxx radar sensor driver porting guide',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html',1,'']]]
+  ['2_20spi_20write_20command_20packet_20structure_0',['Table 2. SPI write command packet structure',['../index.html#autotoc_md14',1,'']]]
 ];

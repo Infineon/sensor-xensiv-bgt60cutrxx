@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['h_20tt_0',['File: &lt;tt&gt;xensiv_bgt60cutrxx_platform_arduino.h&lt;/tt&gt;',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md80',1,'']]],
+  ['h_0',['File: &lt;span class=&quot;tt&quot;&gt;xensiv_bgt60cutrxx_platform_arduino.h&lt;/span&gt;',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md80',1,'']]],
   ['hal_1',['Platform-dependent Hardware Abstraction Layer (HAL)',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md60',1,'']]],
   ['hardware_20abstraction_20layer_20hal_2',['Platform-dependent Hardware Abstraction Layer (HAL)',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md60',1,'']]],
   ['hardware_20connections_3',['Essential hardware connections',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md46',1,'']]],

@@ -26,5 +26,5 @@ var searchData=
   ['convergence_20configuration_23',['Convergence configuration',['../index.html#autotoc_md28',1,'']]],
   ['convergence_20output_24',['Convergence output',['../index.html#autotoc_md27',1,'']]],
   ['core_20api_20functions_25',['Core API functions',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md58',1,'']]],
-  ['cpp_20tt_26',['File: &lt;tt&gt;xensiv_bgt60cutrxx_platform_arduino.cpp&lt;/tt&gt;',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md81',1,'']]]
+  ['cpp_26',['File: &lt;span class=&quot;tt&quot;&gt;xensiv_bgt60cutrxx_platform_arduino.cpp&lt;/span&gt;',['../md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md81',1,'']]]
 ];

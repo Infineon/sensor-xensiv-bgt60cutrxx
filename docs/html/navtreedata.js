@@ -25,9 +25,9 @@
 var NAVTREE =
 [
   [ "sensor-xensiv-bgt60cutrxx", "index.html", [
-    [ "XENSIV™ BGT60CUTRxx radar sensor library", "index.html", "index" ],
-    [ "XENSIV™ BGT60CUTRxx radar sensor driver porting guide", "md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html", [
-      [ "XMC™ XMC1400 Arduino Kit edition", "md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md37", null ],
+    [ "XENSIV&trade; BGT60CUTRxx radar sensor library", "index.html", "index" ],
+    [ "XENSIV&trade; BGT60CUTRxx radar sensor driver porting guide", "md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html", [
+      [ "XMC&trade; XMC1400 Arduino Kit edition", "md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md37", null ],
       [ "Introduction", "md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md39", [
         [ "Scope", "md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md40", null ],
         [ "Driver architecture overview", "md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md41", null ],
@@ -78,11 +78,11 @@ var NAVTREE =
         [ "Hardware setup", "md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md78", null ],
         [ "Pin mapping", "md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md79", null ],
         [ "Platform implementation files", "md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#platform-implementation-files", [
-          [ "File: xensiv_bgt60cutrxx_platform_arduino.h", "md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md80", null ],
-          [ "File: xensiv_bgt60cutrxx_platform_arduino.cpp", "md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md81", null ]
+          [ "File: <span class=\"tt\">xensiv_bgt60cutrxx_platform_arduino.h</span>", "md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md80", null ],
+          [ "File: <span class=\"tt\">xensiv_bgt60cutrxx_platform_arduino.cpp</span>", "md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md81", null ]
         ] ],
         [ "Motion detection application", "md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#motion-detection-application", [
-          [ "File: radar_motion_detection.ino", "md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md82", null ]
+          [ "File: <span class=\"tt\">radar_motion_detection.ino</span>", "md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md82", null ]
         ] ]
       ] ],
       [ "Build and run instructions", "md_docs_2porting-guide_2SW-Porting-Guide-Arduino.html#autotoc_md84", [
@@ -117,5 +117,6 @@ var NAVTREEINDEX =
 "index.html"
 ];
 
-var SYNCONMSG = 'click to disable panel synchronization';
-var SYNCOFFMSG = 'click to enable panel synchronization';
+const SYNCONMSG = 'click to disable panel synchronization';
+const SYNCOFFMSG = 'click to enable panel synchronization';
+const LISTOFALLMEMBERS = 'List of all members';

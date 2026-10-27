@@ -867,6 +867,20 @@ Field | Type | Description
 ## BGT60CUTRxx frame acquisition
 
 This contains the application function to help read the frame data from radar internal FIFO buffer.
+
+The interface is declared in `radar_fifo/radar_fifo_read.h`:
+
+Function | Description
+------ | ------------
+`xensiv_bgt60cutrxx_get_fifo_event()` | Reads the FIFO event from the interrupt status register and clears the underflow and overflow flags
+`xensiv_bgt60cutrxx_get_fifo_level()` | Reads the number of samples currently stored in the FIFO, without reading the FIFO itself
+`radar_fifo_check_integrity()` | Reads the FIFO event and reports through `frame_valid` whether the radar frame can be trusted; a FIFO overflow means samples were dropped and invalidates the frame
+`radar_fifo_read()` | Reads the requested number of radar samples into the frame buffer and then clears the FIFO threshold event flag
+
+None of these functions print. Rendering a FIFO event is left to the application, so the driver stays usable on targets without a console.
+
+If `radar_fifo_read()` fails, its status code is returned unchanged and the FIFO threshold event flag is left pending, so the unread frame is not acknowledged.
+
 ## Linux kernel driver
 
 A Linux kernel driver for the BGT60CUTRxx sensor is provided in the `platform/linux-kernel/` folder. It targets Raspberry Pi and similar SBCs and exposes the sensor via a standard Linux SPI character device. The kernel module includes a fixed-point implementation of the full algorithm chain (motion detection, clustering, clutter localization, and convergence) so that the driver can run without floating-point hardware. A device tree overlay, build instructions, and Python utility scripts for reading targets and streaming data over a WebSocket are also included.

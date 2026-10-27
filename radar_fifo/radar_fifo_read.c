@@ -91,13 +91,45 @@ int32_t xensiv_bgt60cutrxx_get_fifo_level(xensiv_bgt60cutrxx_t* dev, uint32_t* n
 }
 
 
+int32_t radar_fifo_check_integrity(xensiv_bgt60cutrxx_t* dev,
+                                   xensiv_bgt60cutrxx_fifo_events_t* event,
+                                   bool* frame_valid)
+{
+    if ((dev == NULL) || (event == NULL) || (frame_valid == NULL))
+    {
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_POINTER;
+    }
+
+    *frame_valid = false;
+
+    int32_t status = xensiv_bgt60cutrxx_get_fifo_event(dev, event);
+    if (XENSIV_BGT60CUTRXX_STATUS_OK != status)
+    {
+        return status;
+    }
+
+    // an overflow means samples were dropped, so the radar frame cannot be trusted
+    *frame_valid = (FIFO_EVENT_OVERFLOW != *event);
+
+    return status;
+}
+
+
 int32_t radar_fifo_read(xensiv_bgt60cutrxx_t* dev, uint16_t* frame_buffer, uint32_t num_samples)
 {
+    if ((dev == NULL) || (frame_buffer == NULL))
+    {
+        return XENSIV_BGT60CUTRXX_STATUS_INVALID_POINTER;
+    }
+
     const uint32_t num_words = num_samples / 2;  // Two 16-bit samples are stored in one 32-bit FIFO word
     int32_t status = xensiv_bgt60cutrxx_get_fifo(dev, (fifo_entry_t*)frame_buffer, num_words);
+    if (XENSIV_BGT60CUTRXX_STATUS_OK != status)
+    {
+        // keep the FIFO threshold IRQ flag pending, the frame has not been consumed
+        return status;
+    }
 
     // clear FIFO threshold IRQ flag after reading
-    status |= xensiv_bgt60cutrxx_set_irq_clear(dev, BGT60CUTR13B_IR_CLEAR_THRESHOLD_MSK);
-
-    return status == XENSIV_BGT60CUTRXX_STATUS_OK ? status : XENSIV_BGT60CUTRXX_STATUS_DEV_ERROR;
+    return xensiv_bgt60cutrxx_set_irq_clear(dev, BGT60CUTR13B_IR_CLEAR_THRESHOLD_MSK);
 }

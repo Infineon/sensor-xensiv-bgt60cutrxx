@@ -65,10 +65,31 @@ int32_t xensiv_bgt60cutrxx_get_fifo_event(xensiv_bgt60cutrxx_t* dev, xensiv_bgt6
 int32_t xensiv_bgt60cutrxx_get_fifo_level(xensiv_bgt60cutrxx_t* dev, uint32_t* num_samples_available);
 
 /**
+ * @brief Reads the FIFO event and reports whether the FIFO is healthy.
+ *
+ * Underflow and overflow flags are cleared as a side effect. Rendering the event is the
+ * caller's responsibility; this function performs no I/O beyond the register access.
+ *
+ * @param dev Pointer to the XENSIV BGT60CUTRxx device structure.
+ * @param event Pointer to a variable where the FIFO event will be stored.
+ * @param frame_valid Set to false when the event means radar frame data cannot be trusted,
+ *                    and also when the FIFO event could not be read.
+ *
+ * @return status code, XENSIV_BGT60CUTRXX_STATUS_OK on success,
+ *         XENSIV_BGT60CUTRXX_STATUS_INVALID_POINTER if a required pointer argument is NULL.
+ */
+int32_t radar_fifo_check_integrity(xensiv_bgt60cutrxx_t* dev,
+                                   xensiv_bgt60cutrxx_fifo_events_t* event,
+                                   bool* frame_valid);
+
+/**
  * @brief Reads radar samples from the FIFO of the XENSIV(TM) BGT60CUTRxx sensor.
  *
  * This function retrieves radar samples stored in the FIFO of the XENSIV(TM) BGT60CUTRxx sensor
  * into the provided frame buffer. Afterwards, it clears the FIFO threshold event flag.
+ *
+ * If the FIFO read fails, its status code is returned unchanged and the FIFO threshold event flag
+ * is left pending.
  *
  * @note The caller must ensure the frame buffer has enough space to hold the requested number of radar samples.
  * @note The function assumes data production is active and the device is in the expected sequence state.
@@ -77,7 +98,8 @@ int32_t xensiv_bgt60cutrxx_get_fifo_level(xensiv_bgt60cutrxx_t* dev, uint32_t* n
  * @param frame_buffer pointer to the frame buffer.
  * @param num_samples number of radar samples to read from FIFO.
  *
- * @return status code, XENSIV_BGT60CUTRXX_STATUS_OK on success.
+ * @return status code, XENSIV_BGT60CUTRXX_STATUS_OK on success,
+ *         XENSIV_BGT60CUTRXX_STATUS_INVALID_POINTER if a required pointer argument is NULL.
  */
 int32_t radar_fifo_read(xensiv_bgt60cutrxx_t* dev, uint16_t* frame_buffer, uint32_t num_samples);
 

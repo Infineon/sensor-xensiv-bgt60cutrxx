@@ -194,5 +194,33 @@ int32_t radar_motion_detection_process(motion_detection_t* motion_detection);
  *   - A negative value if an error occurs.
  */
 int32_t radar_motion_detection_targets_read(motion_detection_t* motion_detection);
+
+/**
+ * @brief Decodes the raw target registers into the processed target list.
+ *
+ * Converts the magnitude, location and angle registers held in
+ * motion_detection->targets into range, velocity, angle and magnitude, using
+ * the resolution and velocity grid of the sequence that produced them. Entries
+ * without a receive antenna are left cleared and are not counted.
+ *
+ * Callers that obtain the target registers by other means than
+ * radar_motion_detection_targets_read(), such as a platform that reads them
+ * through a kernel driver, use this directly. It performs no register access.
+ *
+ * @param[in,out] motion_detection Pointer to the motion detector instance.
+ * @param sequence_settings Settings of the sequence the targets belong to.
+ * @return 0 on success, or a negative error code on failure.
+ */
+int32_t radar_motion_detection_decode_targets(motion_detection_t* motion_detection,
+                                              const sequence_settings_t* sequence_settings);
+
+/**
+ * @brief Checks that a sequence counter advanced by exactly one.
+ *
+ * @param seq_counter Counter read for the current sequence.
+ * @param seq_counter_prev Counter read for the previous sequence.
+ * @return true when no sequence was missed.
+ */
+bool radar_motion_detection_evaluate_sequence_counter(uint32_t seq_counter, uint32_t seq_counter_prev);
 /**@} end of group radar_motion_detection*/
 #endif /* RADAR_MOTION_DETECTION_H_ */

@@ -15,6 +15,15 @@ This library provides functions for interfacing with the XENSIV&trade; BGT60CUTR
 
 ## What Changed?
 
+### 1.1.7
+
+#### Add
+- **FIFO read**: `radar_fifo_check_integrity()`, which reads the FIFO event and reports whether the radar frame can be trusted, without performing any I/O of its own
+
+#### Fix
+- **FIFO read**: `radar_fifo_read()` validates its pointer arguments and returns `XENSIV_BGT60CUTRXX_STATUS_INVALID_POINTER`, like the neighboring FIFO functions
+- **FIFO read**: `radar_fifo_read()` leaves the FIFO threshold interrupt flag pending when the FIFO read fails, and propagates the error unchanged instead of flattening it to a device error
+
 ### v1.1.0 (public release)
 
 In this version, the **deep sleep** feature for the XENSIV™ BGT60CUTRxx has been added. This feature allows the sensor to enter a low-power state, reducing power consumption when the sensor is not actively in use. Additionally, the **wake up** feature has been implemented to bring the sensor back to its operational state from deep sleep.
